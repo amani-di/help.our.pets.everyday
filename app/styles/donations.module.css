@@ -1,0 +1,293 @@
+ 
+.donationContainer {
+    padding: 30px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  
+  h1.donationTitle {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #ff7f00;
+    font-weight: 700;
+  }
+  
+  .quoteContainer {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 50px;
+    border-radius: 20px;
+    margin-bottom: 100px;
+    text-align: center;
+  }
+  
+  .quote {
+    font-size: 30px;
+    font-style: oblique;
+    margin-bottom: 10px;
+  }
+  
+  .filterContainer {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .filterBtn {
+    background-color: #87CEEB;
+    color: #212529;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .filterBtn:hover {
+    background-color: #5cacee;
+    transform: translateY(-2px);
+  }
+  
+  .filterBtn.active {
+    background-color: #ff7f00;
+    color: white;
+  }
+  
+  .catalog {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .card {
+    background-color: rgb(238, 241, 225);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .cardImg {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+  }
+  
+  .cardContent {
+    padding: 20px;
+  }
+  
+  .cardTitle {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #212529;
+  }
+  
+  .cardDescription {
+    color: #6c757d;
+    margin-bottom: 15px;
+  }
+  
+  .cardDate {
+    font-size: 14px;
+    color: #ff7f00;
+    font-weight: 600;
+  }
+  
+  .cardType {
+    display: inline-block;
+    background-color: #1e3a8a;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .shelterInfo {
+    background-color: rgba(30, 58, 138, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border-left: 3px solid #1e3a8a;
+  }
+  
+  .shelterAddress, .shelter-capacity, .shelter-animals {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #4a5568;
+  }
+  
+  .infoLabel {
+    font-weight: 600;
+    color: #2d3748;
+    margin-right: 5px;
+  }
+  
+  .viewMoreContainer {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin: 40px 0;
+  }
+  
+  .viewMoreBtn {
+    background-color: #ff7f00;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .viewDetailsLink {
+    display: inline-block;
+    margin-top: 15px;
+    color: #1e3a8a;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .viewDetailsLink:hover {
+    color: #ff7f00;
+    text-decoration: underline;
+  }
+  
+  .viewMoreBtn:hover {
+    background-color: #e67300;
+  }
+  
+  .viewMoreBtn:hover:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-100%);
+    animation: slide-in 0.5s forwards;
+  }
+  
+  @keyframes slide-in {
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  /* Page de détail */
+  .donationDetailContainer {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .donationDetailHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .donationDetailImage {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .donationDetailInfo {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .donationDetailType {
+    display: inline-block;
+    background-color: #1e3a8a;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  
+  .donationDetailTitle {
+    font-size: 28px;
+    color: #212529;
+    margin-bottom: 15px;
+  }
+  
+  .donationDetailDescription {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4a5568;
+    margin-bottom: 25px;
+  }
+  
+  .donationMeta {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    color: #6c757d;
+    font-size: 14px;
+  }
+  
+  .donationDate {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 40px;
+    color: #1e3a8a;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .backButton:hover {
+    color: #ff7f00;
+  }
+  
+  @media (max-width: 768px) {
+    .filter-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .filterBtn {
+      width: 80%;
+    }
+    
+    .donationDetailHeader {
+      flex-direction: column;
+    }
+  }

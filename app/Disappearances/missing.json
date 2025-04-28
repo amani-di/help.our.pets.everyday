@@ -1,0 +1,124 @@
+{
+    "missingAnimals": [
+      {
+        "id": 1,
+        "image": "/images/missing/cat1.jpg",
+        "species": "Cat",
+        "gender": "Female",
+        "breed": "Siamese",
+        "disappearanceDate": "2025-04-10",
+        "location": "Annaba, Berrahal",
+        "publishDate": "2025-04-12",
+        "note": "Has a blue collar with name tag \"Luna\"",
+        "ownerContact": "john.doe@email.com"
+      },
+      {
+        "id": 2,
+        "image": "/images/missing/dog1.jpg",
+        "species": "Dog",
+        "gender": "Male",
+        "breed": "Golden Retriever",
+        "disappearanceDate": "2025-04-15",
+        "location": "Annaba, Bouni",
+        "publishDate": "2025-04-16", 
+        "note": "Responds to the name \"Max\"",
+        "ownerContact": "sarah.smith@email.com"
+      },
+      {
+        "id": 3,
+        "image": "/images/missing/cat2.jpg",
+        "species": "Cat",
+        "gender": "Male",
+        "breed": "Maine Coon",
+        "disappearanceDate": "2025-04-08",
+        "location": "Ain Defla, Djelida",
+        "publishDate": "2025-04-09",
+        "note": "Has a distinctive black spot on his right ear",
+        "ownerContact": "mike.johnson@email.com"
+      },
+      {
+        "id": 4,
+        "image": "/images/missing/dog2.jpg",
+        "species": "Dog",
+        "gender": "Female",
+        "breed": "Beagle",
+        "disappearanceDate": "2025-04-14",
+        "location": "Oran, Arzew",
+        "publishDate": "2025-04-15",
+        "note": "Has a red harness",
+        "ownerContact": "emma.wilson@email.com"
+      },
+      {
+        "id": 5,
+        "image": "/images/missing/rabbit1.jpg",
+        "species": "Rabbit",
+        "gender": "Female",
+        "breed": "Holland Lop",
+        "disappearanceDate": "2025-04-11",
+        "location": "Alger, Vialar",
+        "publishDate": "2025-04-13",
+        "note": "White with brown spots",
+        "ownerContact": "david.brown@email.com"
+      },
+      {
+        "id": 6,
+        "image": "/images/missing/parrot1.jpg",
+        "species": "Bird",
+        "gender": "Male",
+        "breed": "Perroquet",
+        "disappearanceDate": "2025-04-16",
+        "location": "Constantine, Chelghom Eleid",
+        "publishDate": "2025-04-17",
+        "note": "Speaks a few words and whistles",
+        "ownerContact": "lisa.garcia@email.com"
+      },
+      {
+        "id": 7,
+        "image": "/images/missing/dog3.jpg",
+        "species": "Dog",
+        "gender": "Male",
+        "breed": "Pug",
+        "disappearanceDate": "2025-04-09",
+        "location": "Skikda, New Azaba",
+        "publishDate": "2025-04-10",
+        "note": "Has slight limp in right back leg",
+        "ownerContact": "thomas.martin@email.com"
+      },
+      {
+        "id": 8,
+        "image": "/images/missing/cat3.jpg",
+        "species": "Cat",
+        "gender": "Female",
+        "breed": "Ragdoll",
+        "disappearanceDate": "2025-04-13",
+        "location": "SoukAhras, Mdawroch",
+        "publishDate": "2025-04-14",
+        "note": "Blue eyes and light-colored fur",
+        "ownerContact": "olivia.wong@email.com"
+      },
+      {
+        "id": 9,
+        "image": "/images/missing/ferret1.jpg",
+        "species": "Ferret",
+        "gender": "Male",
+        "breed": "Albino Ferret",
+        "disappearanceDate": "2025-04-12",
+        "location": "Alger, ElCoba DC",
+        "publishDate": "2025-04-13",
+        "note": "White fur with red eyes, very playful",
+        "ownerContact": "robert.chen@email.com"
+      },
+      {
+        "id": 10,
+        "image": "/images/missing/hamster1.jpg",
+        "species": "Hamster",
+        "gender": "Female",
+        "breed": "Syrian Hamster",
+        "disappearanceDate": "2025-04-16",
+        "location": "Annaba, Seraidi",
+        "publishDate": "2025-04-17",
+        "note": "Golden colored, responds to \"Peanut\"",
+        "ownerContact": "jessica.taylor@email.com"
+      }
+    ]
+  }
