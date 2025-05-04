@@ -17,7 +17,7 @@ const DonationFilter = ({ activeFilter, onFilterChange }) => {
                 <button 
                     key={filter.id}
                     className={`styles.filterBtn  ${activeFilter === filter.id ? 'active' : ''}`} 
-                    className={styles.filterBtn}
+                   // className={styles.filterBtn}
                     onClick={() => onFilterChange(filter.id)}
                 >
                     {filter.label}

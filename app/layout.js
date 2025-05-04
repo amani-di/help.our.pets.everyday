@@ -14,12 +14,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-  
+     
 export const metadata = {
-  title: 'Animal Shelter Donations',
-  description: 'Help animals in need with your donations',
-}; 
+  title: 'Animal Support Platform',
+  description: 'Platform to help animals in need through donations and shelters',
+};
+ 
 
 
 export default function RootLayout({ children }) {

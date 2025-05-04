@@ -1,0 +1,124 @@
+{
+    "reports": [
+      {
+        "id": "ab001",
+        "reportType": "abuse",
+        "abuseDate": "2025-04-25",
+        "publishDate": "2025-04-26",
+        "species": "Dog",
+        "location": {
+          "wilaya": "Alger",
+          "commune": "Bab Ezzouar",
+          "neighborhood": "Cité Universitaire"
+        },
+        "description": "Multiple dogs chained outdoors without proper shelter or water in extreme heat. Animals appear malnourished and in distress.",
+        "photos": ["/images/abuse/case1-1.jpg", "/images/abuse/case1-2.jpg", "/images/abuse/case1-3.jpg"],
+        "video": "/videos/abuse/case1.mp4",
+        "status": "Under Investigation"
+      },
+      {
+        "id": "ab002",
+        "reportType": "abuse",
+        "abuseDate": "2025-04-20",
+        "publishDate": "2025-04-22",
+        "species": "Cat",
+        "location": {
+          "wilaya": "Oran",
+          "commune": "Bir El Djir",
+          "neighborhood": "Hai El Yasmine"
+        },
+        "description": "Cat was found with signs of physical abuse and injuries. Multiple cats in the area have disappeared under suspicious circumstances.",
+        "photos": ["/images/abuse/case2-1.jpg", "/images/abuse/case2-2.jpg"],
+        "status": "Open"
+      },
+      {
+        "id": "ab003",
+        "reportType": "abuse",
+        "abuseDate": "2025-04-15",
+        "publishDate": "2025-04-16",
+        "location": {
+          "wilaya": "Constantine",
+          "commune": "El Khroub",
+          "neighborhood": "Centre Ville"
+        },
+        "description": "Illegal animal fighting ring suspected in abandoned warehouse. Loud animal noises and gatherings reported during late night hours.",
+        "photos": ["/images/abuse/case3-1.jpg", "/images/abuse/case3-2.jpg", "/images/abuse/case3-3.jpg"],
+        "status": "Referred to Authorities"
+      },
+      {
+        "id": "ab004",
+        "reportType": "abuse",
+        "abuseDate": "2025-04-10",
+        "publishDate": "2025-04-12",
+        "species": "Horse",
+        "location": {
+          "wilaya": "Annaba",
+          "commune": "El Bouni",
+          "neighborhood": "Route Nationale"
+        },
+        "description": "Overworked carriage horse observed in poor condition. Animal appears severely underweight with visible harness wounds and signs of exhaustion.",
+        "photos": ["/images/abuse/case4-1.jpg", "/images/abuse/case4-2.jpg"],
+        "status": "Under Investigation"
+      },
+      {
+        "id": "ab005",
+        "reportType": "abuse",
+        "abuseDate": "2025-04-05",
+        "publishDate": "2025-04-08",
+        "species": "Multiple",
+        "location": {
+          "wilaya": "Tlemcen",
+          "commune": "Mansourah",
+          "neighborhood": "Zone Industrielle"
+        },
+        "description": "Suspected illegal animal hoarding situation. Numerous animals kept in unsanitary conditions with inadequate care and ventilation.",
+        "photos": ["/images/abuse/case5-1.jpg", "/images/abuse/case5-2.jpg", "/images/abuse/case5-3.jpg"],
+        "video": "/videos/abuse/case5.mp4",
+        "status": "Intervention Planned"
+      },
+      {
+        "id": "ab006",
+        "reportType": "abuse",
+        "abuseDate": "2025-04-01",
+        "publishDate": "2025-04-03",
+        "species": "Bird",
+        "location": {
+          "wilaya": "Béjaïa",
+          "commune": "Tichy",
+          "neighborhood": "Plage Est"
+        },
+        "description": "Protected bird species being illegally captured and kept in small cages for sale. Multiple captured birds observed in poor health.",
+        "photos": ["/images/abuse/case6-1.jpg", "/images/abuse/case6-2.jpg"],
+        "status": "Under Investigation"
+      },
+      {
+        "id": "ab007",
+        "reportType": "abuse",
+        "abuseDate": "2025-03-28",
+        "publishDate": "2025-03-29",
+        "location": {
+          "wilaya": "Djelfa",
+          "commune": "Messaad",
+          "neighborhood": "Quartier Populaire"
+        },
+        "description": "Animals left in abandoned property without food or water. Evidence of neglect and malnutrition.",
+        "photos": ["/images/abuse/case7-1.jpg", "/images/abuse/case7-2.jpg"],
+        "status": "Resolved"
+      },
+      {
+        "id": "ab008",
+        "reportType": "abuse",
+        "abuseDate": "2025-03-25",
+        "publishDate": "2025-03-26",
+        "species": "Dog",
+        "location": {
+          "wilaya": "Skikda",
+          "commune": "El Hadaiek",
+          "neighborhood": "Cité El Amal"
+        },
+        "description": "Dog observed being kept permanently chained with no shelter from extreme weather conditions. Animal shows signs of neglect.",
+        "photos": ["/images/abuse/case8-1.jpg", "/images/abuse/case8-2.jpg", "/images/abuse/case8-3.jpg"],
+        "status": "Open"
+      }
+    ]
+  }

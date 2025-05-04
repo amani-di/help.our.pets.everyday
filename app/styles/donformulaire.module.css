@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+.formulairesContainer {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 80px 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+/* En-tête */
+.formulairesHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #8b4513;
+}
+
+.formulairesHeader h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.formulairesHeader p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Styles des formulaires */
+.formulaire {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-top: 4px solid #ff8c00;
+}
+
+.formulaire h2 {
+  color: #ff8c00;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Groupes d'inputs */
+.inputGroup {
+  margin-bottom: 1.2rem;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.inputGroup input,
+.inputGroup textarea,
+.inputGroup select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.inputGroup input:focus,
+.inputGroup textarea:focus,
+.inputGroup select:focus {
+  border-color: #ff8c00;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+}
+
+.inputGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Boutons */
+.btn {
+  display: inline-block;
+  background-color: #ff8c00;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: #ff9f33;
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btnSubmit {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  background-color: #ff8c00;
+}
+
+.btnToggle {
+  display: block;
+  width: 80%;
+  max-width: 300px;
+  margin: 2rem auto 0;
+  background-color: #8b4513;
+}
+
+.btnToggle:hover {
+  background-color: #242222;
+}
+
+/* Message d'information */
+.infoMessage {
+  background-color: #fffaf0;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  color: #0a0a0a;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Animation de transition */
+.formFade {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .formulairesContainer {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+}

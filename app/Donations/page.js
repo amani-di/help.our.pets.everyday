@@ -80,7 +80,7 @@ export default function DonationsPage() {
       <DonationCatalog donations={filteredDonations} />
 
       <div className={styles.viewMmoreContainer}>
-        <button className={styles.viewMoreBtn}>View More Donations</button>
+        <button className={styles.viewMoreBtn}>View More </button>
       </div>
     </div>
   );
