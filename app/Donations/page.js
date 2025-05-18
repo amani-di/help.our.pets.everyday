@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DonationFilter from '../component/donation/DonationFilter';
 import DonationCatalog from '../component/donation/DonationCatalog';
+import DonationDetailPage from '../Donations/[id]/page.js';
 import styles from '../styles/donations.module.css';
  
 

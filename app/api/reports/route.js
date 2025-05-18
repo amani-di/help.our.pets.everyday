@@ -1,126 +1,164 @@
+//api/reports/route.js
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/mongodb';
-import AnimalReport from '@/models/AnimalReport';
-import { saveFiles, saveFile } from '@/lib/uploadUtils';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]/route';
+import { connectDB } from '../../config/mongodb';
+import cloudinary from '../../config/cloudinary';
+import { ObjectId } from 'mongodb';
 
 export async function POST(request) {
+  let db;
+  
   try {
-    await connectToDatabase();
+    // Connect to database with the improved connection function
+    console.log('Connecting to MongoDB...');
+    db = await connectDB();
+    console.log('MongoDB connection established');
     
-    // Traiter le formulaire multipart
-    const formData = await request.formData();
-    
-    // Extraire les données du formulaire
-    const reportType = formData.get('reportType');
-    const species = formData.get('species');
-    const breed = formData.get('breed');
-    const gender = formData.get('gender');
-    const disappearanceDate = formData.get('disappearanceDate');
-    const abuseDate = formData.get('abuseDate');
-    const wilaya = formData.get('wilaya');
-    const commune = formData.get('commune');
-    const neighborhood = formData.get('neighborhood');
-    const ownerContact = formData.get('ownerContact');
-    const description = formData.get('description');
-    
-    // Extraire les fichiers
-    const photoFiles = formData.getAll('photos');
-    const videoFile = formData.get('video');
-    
-    // Valider les données minimales requises
-    if (!reportType || !wilaya || !commune || !neighborhood || photoFiles.length < 2) {
+    // Authentication verification
+    const session = await getServerSession(authOptions);
+    if (!session) {
       return NextResponse.json(
-        { error: 'Veuillez remplir tous les champs obligatoires' },
-        { status: 400 }
+        { success: false, message: 'Authentication required' },
+        { status: 401 }
       );
     }
     
-    // Valider les données spécifiques au type de rapport
-    if (reportType === 'disappearance') {
-      if (!species || !breed || !disappearanceDate || !ownerContact) {
-        return NextResponse.json(
-          { error: 'Veuillez remplir tous les champs obligatoires pour un signalement de disparition' },
-          { status: 400 }
-        );
+    console.log('Session user:', session.user);
+    
+    const formData = await request.formData();
+    
+    // Process media uploads
+    const photos = [];
+    const photoFiles = formData.getAll('photos');
+    
+    try {
+      for (const file of photoFiles) {
+        if (file instanceof Blob) {
+          const buffer = Buffer.from(await file.arrayBuffer());
+          const result = await uploadToCloudinary(buffer, 'image');
+          photos.push(result.secure_url);
+        }
       }
-    } else if (reportType === 'abuse') {
-      if (!abuseDate) {
-        return NextResponse.json(
-          { error: 'Veuillez remplir tous les champs obligatoires pour un signalement de maltraitance' },
-          { status: 400 }
-        );
-      }
+    } catch (uploadError) {
+      console.error('Photo upload error:', uploadError);
+      return NextResponse.json(
+        { success: false, message: 'Error while uploading photos' },
+        { status: 500 }
+      );
     }
     
-    // Enregistrer les photos
-    const photoUrls = await saveFiles(photoFiles, 'animal-reports/photos');
-    
-    // Enregistrer la vidéo si elle existe
     let videoUrl = null;
-    if (videoFile && videoFile.size > 0) {
-      videoUrl = await saveFile(videoFile, 'animal-reports/videos');
+    const videoFile = formData.get('video');
+    if (videoFile instanceof Blob) {
+      try {
+        const buffer = Buffer.from(await videoFile.arrayBuffer());
+        const result = await uploadToCloudinary(buffer, 'video');
+        videoUrl = result.secure_url;
+      } catch (videoUploadError) {
+        console.error('Video upload error:', videoUploadError);
+        return NextResponse.json(
+          { success: false, message: 'Error while uploading video' },
+          { status: 500 }
+        );
+      }
     }
     
-    // Créer le document de rapport
-    const reportData = {
-      reportType,
-      wilaya,
-      commune,
-      neighborhood,
-      description,
-      photos: photoUrls,
-      // Champs spécifiques aux disparitions
-      ...(reportType === 'disappearance' && {
-        species,
-        breed,
-        gender,
-        disappearanceDate: new Date(disappearanceDate),
-        ownerContact
-      }),
-      // Champs spécifiques aux maltraitances
-      ...(reportType === 'abuse' && {
-        abuseDate: new Date(abuseDate),
+    // Get report type - IMPORTANT FIX: Don't transform the type value
+    const reportType = formData.get('reportType');
+    console.log('Received report type:', reportType);
+    
+    // Ensure userType is valid based on signalementSchema's enum
+    let userType = 'owner'; // Default value
+    if (session.user && session.user.userType) {
+      // Map the session userType to match the expected enum values
+      switch(session.user.userType) {
+        case 'owner':
+        case 'vet':
+        case 'association':
+        case 'store':
+          userType = session.user.userType;
+          break;
+        default:
+          userType = 'owner'; // Fallback to default
+      }
+    }
+    
+    // Build the base signalement data object
+    const signalementData = {
+      type: reportType, // FIXED: Use the reportType directly without transformation
+      createdBy: new ObjectId(session.user.id),
+      userType: userType,
+      location: {
+        wilaya: formData.get('wilaya'),
+        commune: formData.get('commune'),
+        neighborhood: formData.get('neighborhood')
+      },
+      media: {
+        photos,
         video: videoUrl
-      })
+      },
+      description: formData.get('description') || '',
+      status: 'nouveau',
+      createdAt: new Date()
     };
     
-    // Enregistrer dans la base de données
-    const newReport = new AnimalReport(reportData);
-    const savedReport = await newReport.save();
+    // Add specific fields based on report type
+    if (reportType === 'disparition') {
+      signalementData.species = formData.get('species');
+      signalementData.breed = formData.get('breed');
+      signalementData.gender = formData.get('gender');
+      signalementData.dateIncident = new Date(formData.get('disappearanceDate'));
+      signalementData.contact = formData.get('ownerContact');
+    } else {
+      signalementData.dateIncident = new Date(formData.get('abuseDate'));
+    }
     
-    return NextResponse.json(savedReport, { status: 201 });
-  } catch (error) {
-    console.error('Error creating report:', error);
+    console.log('Creating signalement with data:', {
+      type: signalementData.type,
+      userType: signalementData.userType,
+      species: signalementData.species,
+      breed: signalementData.breed
+    });
+    
+    // Use native MongoDB driver to insert into the "signalements" collection
+    const collection = db.collection('signalements');
+    const result = await collection.insertOne(signalementData);
+    
+    console.log('Signalement saved successfully with ID:', result.insertedId);
+    
+    // Fetch the inserted document to return it
+    const savedSignalement = await collection.findOne({ _id: result.insertedId });
+    
     return NextResponse.json(
-      { error: 'Une erreur est survenue lors de la création du rapport' },
+      { success: true, data: savedSignalement },
+      { status: 201 }
+    );
+    
+  } catch (error) {
+    console.error('Error creating signalement:', error);
+    
+    // More detailed error logging
+    if (error.name === 'MongoError' || error.name === 'MongoServerError') {
+      console.error('MongoDB Error:', error.message);
+    }
+    
+    return NextResponse.json(
+      { success: false, message: error.message || 'Server error' },
       { status: 500 }
     );
   }
 }
 
-export async function GET(request) {
-  try {
-    await connectToDatabase();
-    
-    // Récupérer les paramètres de recherche
-    const { searchParams } = new URL(request.url);
-    const reportType = searchParams.get('type');
-    const wilaya = searchParams.get('wilaya');
-    
-    // Construire la requête
-    const query = {};
-    if (reportType) query.reportType = reportType;
-    if (wilaya) query.wilaya = wilaya;
-    
-    // Récupérer les rapports
-    const reports = await AnimalReport.find(query).sort({ createdAt: -1 });
-    
-    return NextResponse.json(reports);
-  } catch (error) {
-    console.error('Error fetching reports:', error);
-    return NextResponse.json(
-      { error: 'Une erreur est survenue lors de la récupération des rapports' },
-      { status: 500 }
+async function uploadToCloudinary(buffer, resourceType) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { resource_type: resourceType },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
     );
-  }
+    uploadStream.end(buffer);
+  });
 }

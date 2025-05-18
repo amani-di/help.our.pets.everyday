@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
 import styles from '../styles/reportForm.module.css';
 
 // List of Algerian wilayas
@@ -21,8 +21,10 @@ const MAX_PHOTOS = 3;
 const MIN_PHOTOS = 2;
 
 export default function ReportForm() {
+  const { data: session, status } = useSession();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [formData, setFormData] = useState({
-    reportType: 'disappearance',
+    reportType: 'disparition',
     species: '',
     breed: '',
     gender: 'male',
@@ -150,12 +152,12 @@ export default function ReportForm() {
     if (formData.photos.length < MIN_PHOTOS) newErrors.photos = `At least ${MIN_PHOTOS} photos are required`;
     
     // Type-specific validations
-    if (formData.reportType === 'disappearance') {
+    if (formData.reportType === 'disparition') {
       if (!formData.species) newErrors.species = 'Species is required';
       if (!formData.breed) newErrors.breed = 'Breed is required';
       if (!formData.disappearanceDate) newErrors.disappearanceDate = 'Disappearance date is required';
       if (!formData.ownerContact) newErrors.ownerContact = 'Owner contact information is required';
-    } else if (formData.reportType === 'abuse') {
+    } else if (formData.reportType === 'maltraitance') {
       if (!formData.abuseDate) newErrors.abuseDate = 'Date of abuse is required';
     }
     
@@ -164,96 +166,113 @@ export default function ReportForm() {
   };
 
   // Handle form submission
-  // Remplacer la fonction handleSubmit existante par celle-ci
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Verify if user is authenticated
+    if (!session) {
+      setShowAuthModal(true);
+      return;
+    }
   
-  if (!validateForm()) {
-    return;
-  }
+    if (!validateForm()) {
+      return;
+    }
   
-  setIsSubmitting(true);
+    setIsSubmitting(true);
   
-  try {
-    // Créer un objet FormData pour envoyer les fichiers
-    const formDataToSend = new FormData();
-    
-    // Ajouter tous les champs texte
-    formDataToSend.append('reportType', formData.reportType);
-    formDataToSend.append('wilaya', formData.wilaya);
-    formDataToSend.append('commune', formData.commune);
-    formDataToSend.append('neighborhood', formData.neighborhood);
-    
-    if (formData.description) {
-      formDataToSend.append('description', formData.description);
-    }
-    
-    // Ajouter les champs spécifiques selon le type de rapport
-    if (formData.reportType === 'disappearance') {
-      formDataToSend.append('species', formData.species);
-      formDataToSend.append('breed', formData.breed);
-      formDataToSend.append('gender', formData.gender);
-      formDataToSend.append('disappearanceDate', formData.disappearanceDate);
-      formDataToSend.append('ownerContact', formData.ownerContact);
-    } else if (formData.reportType === 'abuse') {
-      formDataToSend.append('abuseDate', formData.abuseDate);
-    }
-    
-    // Ajouter les photos
-    formData.photos.forEach(photo => {
-      formDataToSend.append('photos', photo);
-    });
-    
-    // Ajouter la vidéo si elle existe
-    if (formData.video) {
-      formDataToSend.append('video', formData.video);
-    }
-    
-    // Envoyer les données au serveur
-    const response = await fetch('/api/reports', {
-      method: 'POST',
-      body: formDataToSend,
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erreur lors de la soumission du formulaire');
-    }
-    
-    setSubmitSuccess(true);
-    
-    // Réinitialiser le formulaire après soumission réussie
-    setTimeout(() => {
-      setFormData({
-        reportType: 'disappearance',
-        species: '',
-        breed: '',
-        gender: 'male',
-        disappearanceDate: '',
-        abuseDate: '',
-        wilaya: '',
-        commune: '',
-        neighborhood: '',
-        photos: [],
-        video: null,
-        ownerContact: '',
-        description: ''
+    try {
+      // Create FormData object to send files
+      const formDataToSend = new FormData();
+      
+      // Set the report type directly with French terms
+      formDataToSend.append('reportType', formData.reportType);
+      
+      // Add location data
+      formDataToSend.append('wilaya', formData.wilaya);
+      formDataToSend.append('commune', formData.commune);
+      formDataToSend.append('neighborhood', formData.neighborhood);
+      
+      if (formData.description) {
+        formDataToSend.append('description', formData.description);
+      }
+      
+      // Add type-specific fields
+      if (formData.reportType === 'disparition') {
+        formDataToSend.append('species', formData.species);
+        formDataToSend.append('breed', formData.breed);
+        formDataToSend.append('gender', formData.gender);
+        formDataToSend.append('dateIncident', formData.disappearanceDate);
+        formDataToSend.append('contact', formData.ownerContact);
+      } else if (formData.reportType === 'maltraitance') {
+        formDataToSend.append('dateIncident', formData.abuseDate);
+      }
+      
+      // Add photos
+      formData.photos.forEach(photo => {
+        formDataToSend.append('photos', photo);
       });
-      setPhotoPreviewUrls([]);
-      setVideoPreview(null);
-      setSubmitSuccess(false);
-    }, 3000);
-    
-  } catch (error) {
-    console.error('Submission error:', error);
-    setErrors({
-      ...errors,
-      submit: error.message || 'Échec de la soumission du formulaire. Veuillez réessayer.'
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      
+      // Add video if it exists
+      if (formData.video) {
+        formDataToSend.append('video', formData.video);
+      }
+      
+      // Add debugging information
+      console.log('Submitting form data:', {
+        reportType: formData.reportType,
+        numberOfPhotos: formData.photos.length,
+        hasVideo: !!formData.video,
+        userID: session.user.id,
+        userType: session.user.userType || 'owner'
+      });
+      
+      // Send data to the server
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+      
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Error submitting form');
+      }
+      
+      setSubmitSuccess(true);
+      
+      // Reset form after successful submission
+      setTimeout(() => {
+        setFormData({
+          reportType: 'disparition',
+          species: '',
+          breed: '',
+          gender: 'male',
+          disappearanceDate: '',
+          abuseDate: '',
+          wilaya: '',
+          commune: '',
+          neighborhood: '',
+          photos: [],
+          video: null,
+          ownerContact: '',
+          description: ''
+        });
+        setPhotoPreviewUrls([]);
+        setVideoPreview(null);
+        setSubmitSuccess(false);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Submission error:', error);
+      setErrors({
+        ...errors,
+        submit: error.message || 'Form submission failed. Please try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Clean up object URLs when component unmounts
   useEffect(() => {
     return () => {
@@ -262,15 +281,43 @@ const handleSubmit = async (e) => {
     };
   }, []);
 
+  if (status === 'loading') {
+    return <div className={styles.loading}>Loading...</div>;
+  }
+
   return (
     <div className={styles.reportFormPage}>
+      {/* Authentication Modal */}
+        {showAuthModal && (
+    <div className={styles.authModal}>
+      <div className={styles.authModalContent}>
+        <h3>Authentication required</h3>
+        <p>To submit this report, you must have an account.</p>
+        <div className={styles.authModalButtons}>
+          <Link 
+          href="./signuplogin" 
+          className={styles.authButtonPrimary}
+          >
+            Sign In or Create Account
+          </Link>
+        </div>
+        <button 
+         onClick={() => setShowAuthModal(false)}
+         className={styles.authModalClose}
+       >
+        ×
+        </button>
+      </div>
+    </div>
+      )}
+
       <div className={styles.reportFormContainer}>
         <h1 className={styles.reportFormTitle}>
-          {formData.reportType === 'disappearance' ? 'Report Missing Animal' : 'Report Animal Abuse'}
+          {formData.reportType === 'disparition' ? 'Report Missing Animal' : 'Report Animal Abuse'}
         </h1>
         
         <p className={styles.reportFormDescription}>
-          {formData.reportType === 'disappearance' 
+          {formData.reportType === 'disparition' 
             ? 'Help us find your missing pet by providing detailed information below.'
             : 'Report animal abuse to help protect animals from cruelty and neglect.'
           }
@@ -289,15 +336,15 @@ const handleSubmit = async (e) => {
             <div className={styles.reportTypeToggle}>
               <button 
                 type="button"
-                className={`${styles.reportTypeButton} ${formData.reportType === 'disappearance' ? styles.active : ''}`}
-                onClick={() => setFormData({...formData, reportType: 'disappearance'})}
+                className={`${styles.reportTypeButton} ${formData.reportType === 'disparition' ? styles.active : ''}`}
+                onClick={() => setFormData({...formData, reportType: 'disparition'})}
               >
                 Missing Animal
               </button>
               <button 
                 type="button"
-                className={`${styles.reportTypeButton} ${formData.reportType === 'abuse' ? styles.active : ''}`}
-                onClick={() => setFormData({...formData, reportType: 'abuse'})}
+                className={`${styles.reportTypeButton} ${formData.reportType === 'maltraitance' ? styles.active : ''}`}
+                onClick={() => setFormData({...formData, reportType: 'maltraitance'})}
               >
                 Animal Abuse
               </button>
@@ -305,7 +352,7 @@ const handleSubmit = async (e) => {
           </div>
           
           {/* Dynamic form fields based on report type */}
-          {formData.reportType === 'disappearance' && (
+          {formData.reportType === 'disparition' && (
             <>
               {/* Animal Information Section */}
               <div className={styles.formSection}>
@@ -402,7 +449,7 @@ const handleSubmit = async (e) => {
             </>
           )}
           
-          {formData.reportType === 'abuse' && (
+          {formData.reportType === 'maltraitance' && (
             <>
               <div className={styles.formSection}>
                 <h3>Abuse Information</h3>
@@ -526,7 +573,7 @@ const handleSubmit = async (e) => {
               )}
             </div>
             
-            {formData.reportType === 'abuse' && (
+            {formData.reportType === 'maltraitance' && (
               <div className={styles.formGroup}>
                 <label>Video (Optional)</label>
                 <div className={styles.fileUploadContainer}>
@@ -577,7 +624,7 @@ const handleSubmit = async (e) => {
                 name="description" 
                 value={formData.description}
                 onChange={handleChange}
-                placeholder={formData.reportType === 'disappearance' 
+                placeholder={formData.reportType === 'disparition' 
                   ? "Provide additional details about the animal (color, size, distinctive features, etc.)"
                   : "Describe the abuse situation, any identifiable information about the perpetrators, etc."
                 }

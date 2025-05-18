@@ -1,0 +1,17 @@
+:root {
+    --primary-color: hsl(21, 100%, 50%);
+    --primary-light: #ff7a2f;
+    --primary-dark: #e64500;
+    --off-white: #f7f8fa;
+    --blue-gray-100: #e9eef2;
+    --blue-gray-200: #d5dde6;
+    --blue-gray-300: #b8c4d0;
+    --blue-gray-500: #8896a6;
+    --blue-gray-700: #5e6977;
+    --blue-gray-900: #323b45;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.08);
+    --error-color: #dc3545;
+  }
+  

@@ -10,12 +10,14 @@ export default function MissingAnimalCard({ report }) {
 
   // Format dates for display
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   // Calculate days missing
   const calculateDaysMissing = (disappearanceDate) => {
+    if (!disappearanceDate) return 'N/A';
     const diffTime = Math.abs(new Date() - new Date(disappearanceDate));
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
@@ -25,7 +27,7 @@ export default function MissingAnimalCard({ report }) {
       <div className={styles.disappearReportCard}>
         <div className={styles.cardImageContainer}>
           <Image 
-            src={report.photos[0]} 
+            src={report.photos && report.photos.length > 0 ? report.photos[0] : '/placeholder-pet.jpg'} 
             alt={`Missing ${report.species} - ${report.breed}`}
             className={styles.cardImage}
             width={300}
@@ -37,17 +39,17 @@ export default function MissingAnimalCard({ report }) {
         
         <div className={styles.cardContent}>
           <div className={styles.speciesTag}>
-            <span>{report.species}</span>
+            <span>{report.species || 'Unknown'}</span>
           </div>
           
-          <h2>{report.breed} ({report.gender})</h2>
+          <h2>{report.breed || 'Unknown'} ({report.gender || 'Unknown'})</h2>
           
           <p className={styles.location}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {report.location.commune}, {report.location.wilaya}
+            {report.location?.commune || 'Unknown'}, {report.location?.wilaya || 'Unknown'}
           </p>
           
           <div className={styles.reportStats}>
@@ -92,7 +94,7 @@ export default function MissingAnimalCard({ report }) {
             <button className={styles.closeButton} onClick={() => setIsModalOpen(false)}>×</button>
             
             <h3>Report Sighting: {report.breed} {report.species}</h3>
-            <p>Missing from {report.location.commune}, {report.location.wilaya} since {formatDate(report.disappearanceDate)}</p>
+            <p>Missing from {report.location?.commune}, {report.location?.wilaya} since {formatDate(report.disappearanceDate)}</p>
             
             <form>
               <div className={styles.formGroup}>

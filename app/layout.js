@@ -1,38 +1,40 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
+import { Roboto_Mono} from "next/font/google";
 import "./globals.css";
-import './styles/footer.module.css';
-import './styles/navbar.module.css';
-import Header from './component/navbar';
-import Footer from './component/footer';
+import DonateButton from  './component/boutondon.js';
+import Navbar  from './component/navbar.js';
+import Footer   from   './component/footer.js';
+import { Providers } from './providers';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+ /* variable: "--font-inter",*/
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoMono = Roboto_Mono({
+ /* variable: "--font-roboto-mono",*/
   subsets: ["latin"],
 });
-     
+
+
 export const metadata = {
-  title: 'Animal Support Platform',
-  description: 'Platform to help animals in need through donations and shelters',
+  title: "Hope",
+  description: "Helping Our Pets Everyday.",
 };
- 
-
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+      <body className={`${inter.className} ${robotoMono.className}`}>
+        
+       <Providers>
+          {children}
+          <Navbar/>
+          <DonateButton />
+          <Footer/>
+       </Providers>
+
       </body>
     </html>
   );
 }
- 
- 
-   

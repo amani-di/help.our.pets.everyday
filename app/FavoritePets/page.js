@@ -8,19 +8,66 @@ const FavoritePets = () => {
   // State for storing favorite animals
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Load favorites from localStorage on component mount
-    const loadFavorites = () => {
+    // Load favorites from localStorage and fetch their data
+    const loadFavorites = async () => {
       try {
+        // Get favorite IDs from localStorage
         const storedFavorites = localStorage.getItem('animalFavorites');
-        if (storedFavorites) {
-          const parsedFavorites = JSON.parse(storedFavorites);
-          setFavorites(parsedFavorites);
+        if (!storedFavorites) {
+          setFavorites([]);
+          setLoading(false);
+          return;
         }
-        setLoading(false);
+
+        // Parse the favorites from localStorage
+        const favoritesObj = JSON.parse(storedFavorites);
+        
+        // Convert favorites object to array of IDs where value is true
+        const favoriteIds = Object.entries(favoritesObj)
+          .filter(([_, isFavorite]) => isFavorite)
+          .map(([id]) => id);
+        
+        if (favoriteIds.length === 0) {
+          setFavorites([]);
+          setLoading(false);
+          return;
+        }
+        
+        // Fetch the favorite animals' data from API
+        const response = await fetch(`/api/favorites?ids=${favoriteIds.join(',')}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+        
+        const { success, data } = await response.json();
+        
+        if (success) {
+          // Transform the data to match the expected format in our UI
+          const formattedData = data.map(animal => ({
+            id: animal._id,
+            name: animal.animalName || animal.name,
+            species: animal.animalType || animal.species,
+            gender: animal.gender,
+            age: animal.age,
+            size: animal.size,
+            description: animal.description,
+            image: animal.photos && animal.photos.length > 0 
+              ? (animal.photos[0].url || animal.photos[0]) 
+              : animal.image || '/placeholder-animal.jpg'
+          }));
+          
+          setFavorites(formattedData);
+        } else {
+          throw new Error('Failed to retrieve favorite animals');
+        }
       } catch (error) {
         console.error("Error loading favorites:", error);
+        setError("Failed to load your favorite pets. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
@@ -44,9 +91,25 @@ const FavoritePets = () => {
 
   // Function to remove animal from favorites
   const removeFromFavorites = (id) => {
-    const updatedFavorites = favorites.filter(animal => animal.id !== id);
-    setFavorites(updatedFavorites);
-    localStorage.setItem('animalFavorites', JSON.stringify(updatedFavorites));
+    // Get current favorites from localStorage
+    const storedFavorites = localStorage.getItem('animalFavorites');
+    if (storedFavorites) {
+      const favoritesObj = JSON.parse(storedFavorites);
+      
+      // Set this animal to not favorite
+      favoritesObj[id] = false;
+      
+      // Update localStorage
+      localStorage.setItem('animalFavorites', JSON.stringify(favoritesObj));
+      
+      // Update state to remove this animal
+      setFavorites(prevFavorites => 
+        prevFavorites.filter(animal => animal.id !== id)
+      );
+      
+      // Dispatch an event to notify other components
+      window.dispatchEvent(new Event('storage'));
+    }
   };
 
   return (
@@ -55,6 +118,8 @@ const FavoritePets = () => {
       
       {loading ? (
         <div className={styles.loading}>Loading your favorites...</div>
+      ) : error ? (
+        <div className={styles.error}>{error}</div>
       ) : favorites.length > 0 ? (
         <div className={styles.favoritesGrid}>
           {favorites.map(animal => (
@@ -82,7 +147,7 @@ const FavoritePets = () => {
                   <p className={styles.gender}>
                     <strong>Gender:</strong> 
                     <span className={styles.genderIcon}>
-                      {animal.gender === 'Male' ? (
+                      {animal.gender === 'Male' || animal.gender === 'male' ? (
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2">
                           <circle cx="10.5" cy="10.5" r="7.5" />
                           <line x1="18" y1="18" x2="22" y2="22" />

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/animalcatalog.module.css'; 
-import animal from './animal.json';
+import Link from 'next/link';
 
 const AnimalCatalog = () => {
   // État pour stocker les données des animaux
@@ -17,36 +17,70 @@ const AnimalCatalog = () => {
   const [loading, setLoading] = useState(true);
   // État pour gérer les animaux favoris
   const [favorites, setFavorites] = useState({});
+  // État pour gérer les erreurs
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    // Charger les favoris depuis le localStorage au démarrage
+    const loadFavorites = () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setAnimals(animal);
-        setLoading(false);
+        const savedFavorites = localStorage.getItem('animalFavorites');
+        if (savedFavorites) {
+          setFavorites(JSON.parse(savedFavorites));
+        } else {
+          // Initialize with empty object if no favorites exist
+          localStorage.setItem('animalFavorites', JSON.stringify({}));
+          setFavorites({});
+        }
       } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
+        console.error('Error loading favorites from localStorage:', error);
+        // Initialize with empty object if there was an error
+        localStorage.setItem('animalFavorites', JSON.stringify({}));
+        setFavorites({});
+      }
+    };
+    
+    loadFavorites();
+    
+    const fetchAnimals = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/animals');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        const { success, data } = await response.json();
+        
+        if (success) {
+          setAnimals(data);
+        } else {
+          throw new Error('Failed to retrieve animal data');
+        }
+      } catch (err) {
+        console.error('Error loading animals:', err);
+        setError('Unable to load animals. Please try again later.');
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchAnimals();
     
-    // Load favorites from localStorage
-    try {
-      const storedFavorites = localStorage.getItem('animalFavorites');
-      if (storedFavorites) {
-        const favoritesArray = JSON.parse(storedFavorites);
-        // Convert array to object for easier lookup
-        const favoritesObj = {};
-        favoritesArray.forEach(animal => {
-          favoritesObj[animal.id] = true;
-        });
-        setFavorites(favoritesObj);
+    // Set up event listener for favorites changes
+    const handleStorageChange = (e) => {
+      if (e.key === 'animalFavorites' || e.type === 'storage') {
+        loadFavorites();
       }
-    } catch (error) {
-      console.error("Error loading favorites from localStorage:", error);
-    }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Clean up event listener
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // Handler pour les changements de filtres
@@ -67,47 +101,28 @@ const AnimalCatalog = () => {
 
   // Gérer les favoris
   const toggleFavorite = (id) => {
+    // Get current state from localStorage to ensure consistency
+    const savedFavorites = localStorage.getItem('animalFavorites');
+    const currentFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
+    
+    // Toggle the favorite status
+    const newFavorites = {
+      ...currentFavorites,
+      [id]: !currentFavorites[id]
+    };
+    
+    // Update localStorage
+    localStorage.setItem('animalFavorites', JSON.stringify(newFavorites));
+    
     // Update state
-    setFavorites(prev => {
-      const newFavorites = {
-        ...prev,
-        [id]: !prev[id]
-      };
-      
-      // Update localStorage
-      try {
-        // Get the current animal data
-        const animal = animals.find(a => a.id === id);
-        
-        // Get current favorites from localStorage
-        const storedFavorites = localStorage.getItem('animalFavorites');
-        let favoritesArray = storedFavorites ? JSON.parse(storedFavorites) : [];
-        
-        if (newFavorites[id]) {
-          // Add to favorites if not already there
-          if (!favoritesArray.some(a => a.id === id)) {
-            favoritesArray.push(animal);
-          }
-        } else {
-          // Remove from favorites
-          favoritesArray = favoritesArray.filter(a => a.id !== id);
-        }
-        
-        // Save back to localStorage
-        localStorage.setItem('animalFavorites', JSON.stringify(favoritesArray));
-        
-        // Dispatch event for other components to listen for
-        window.dispatchEvent(new Event('storage'));
-      } catch (error) {
-        console.error("Error updating favorites in localStorage:", error);
-      }
-      
-      return newFavorites;
-    });
+    setFavorites(newFavorites);
+    
+    // Trigger storage event for other components to update
+    window.dispatchEvent(new Event('storage'));
   };
 
   const getAgeRanges = (species) => {
-    switch (species.toLowerCase()) {
+    switch (species?.toLowerCase()) {
       case 'cat':
         return {
           young: { min: 0, max: 6 },
@@ -131,20 +146,27 @@ const AnimalCatalog = () => {
 
   // Déterminer la catégorie d'âge d'un animal
   const getAgeCategory = (animal) => {
+    if (!animal.age) return 'unknown';
+    
     const ageNum = parseInt(animal.age);
-    const ranges = getAgeRanges(animal.species);
+    if (isNaN(ageNum)) return 'unknown';
+    
+    const ranges = getAgeRanges(animal.animalType || animal.species);
     
     if (ageNum >= ranges.young.min && ageNum <= ranges.young.max) return 'young';
     if (ageNum >= ranges.adult.min && ageNum <= ranges.adult.max) return 'adult';
     if (ageNum >= ranges.senior.min) return 'senior';
     
-    return 'unknown'; // Au cas où
+    return 'unknown';
   };
 
   // Filtrer les animaux selon les critères
   const filteredAnimals = animals.filter(animal => {
+    const animalType = animal.animalType || animal.species;
+    const animalName = animal.animalName || animal.name;
+    
     // Filtre par espèce
-    if (filters.species !== 'all' && animal.species !== filters.species) return false;
+    if (filters.species !== 'all' && animalType !== filters.species) return false;
     
     // Filtre par âge en utilisant la fonction getAgeCategory
     if (filters.age !== 'all' && getAgeCategory(animal) !== filters.age) return false;
@@ -153,14 +175,14 @@ const AnimalCatalog = () => {
     if (filters.size !== 'all' && animal.size !== filters.size) return false;
     
     // Recherche par terme
-    if (filters.searchTerm && !animal.name.toLowerCase().includes(filters.searchTerm.toLowerCase())) return false;
+    if (filters.searchTerm && !animalName?.toLowerCase().includes(filters.searchTerm.toLowerCase())) return false;
     
     return true;
   });
 
   // Extraire les options uniques pour les filtres
-  const speciesOptions = ['all', ...new Set(animals.map(animal => animal.species))];
-  const sizeOptions = [...new Set(animals.map(animal => animal.size))];
+  const speciesOptions = ['all', ...new Set(animals.map(animal => animal.animalType || animal.species).filter(Boolean))];
+  const sizeOptions = [...new Set(animals.map(animal => animal.size).filter(Boolean))];
 
   return (
     <div className={styles.animalCatalog}>
@@ -225,19 +247,27 @@ const AnimalCatalog = () => {
             <input 
               id="search-input"
               type="text" 
-              placeholder="Search by name..." 
+              placeholder="Search by name.." 
               value={filters.searchTerm} 
               onChange={handleSearch}
             />
+          </div>
+          
+          <div className={styles.favoritesLink}>
+            <Link href="/FavoritePets" className={styles.viewFavoritesBtn}>
+              View My Favorites
+            </Link>
           </div>
         </div>
         
         <div className={styles.contentArea}>
           {loading ? (
             <div className={styles.loading}>Loading data...</div>
+          ) : error ? (
+            <div className={styles.error}>{error}</div>
           ) : (
             <>
-              {/* Species filter horizontal bar */}
+              {/* Species filter bar */}
               <div className={styles.speciesFilterBar}>
                 {speciesOptions.map(species => (
                   <button
@@ -252,51 +282,67 @@ const AnimalCatalog = () => {
               
               <div className={styles.animalsGrid}>
                 {filteredAnimals.length > 0 ? (
-                  filteredAnimals.map(animal => (
-                    <div key={animal.id} className={styles.animalCard}>
-                      <div className={styles.animalImage}>
-                        <img src={animal.image} alt={animal.name} />
-                        <button 
-                          className={`${styles.favoriteBtn} ${favorites[animal.id] ? styles.active : ''}`}
-                          onClick={() => toggleFavorite(animal.id)}
-                          aria-label={favorites[animal.id] ? "Remove from favorites" : "Add to favorites"}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={favorites[animal.id] ? "red" : "none"} stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                        </button>
+                  filteredAnimals.map(animal => {
+                    const animalId = animal._id || animal.id;
+                    const animalName = animal.animalName || animal.name;
+                    const animalType = animal.animalType || animal.species;
+                    // Gérer les différentes structures de photos possibles
+                    const imageUrl = animal.photos && animal.photos.length > 0 
+                      ? (animal.photos[0].url || animal.photos[0]) 
+                      : animal.image || '/placeholder-animal.jpg';
+                    
+                    return (
+                      <div key={animalId} className={styles.animalCard}>
+                        <Link href={`/AnimalCatalog/${animalId}`} className={styles.animalLink}>
+                          <div className={styles.animalImage}>
+                            <img src={imageUrl} alt={animalName} />
+                            <button 
+                              className={`${styles.favoriteBtn} ${favorites[animalId] ? styles.active : ''}`}
+                              onClick={(e) => {
+                                e.preventDefault(); // Prevent navigation to detail page
+                                toggleFavorite(animalId);
+                              }}
+                              aria-label={favorites[animalId] ? "Remove from favorites" : "Add to favorites"}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={favorites[animalId] ? "red" : "none"} stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                              </svg>
+                            </button>
+                          </div>
+                          <div className={styles.animalInfo}>
+                            <h3>{animalName}</h3>
+                            <div className={styles.infoRow}>
+                              <p><strong>Species:</strong> {animalType}</p>
+                              <p className={styles.gender}>
+                                <strong>Gender:</strong> 
+                                <span className={styles.genderIcon}>
+                                  {(animal.gender === 'male' || animal.gender === 'Male') ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2">
+                                      <circle cx="10.5" cy="10.5" r="7.5" />
+                                      <line x1="18" y1="18" x2="22" y2="22" />
+                                      <line x1="22" y1="15" x2="22" y2="22" />
+                                      <line x1="15" y1="22" x2="22" y2="22" />
+                                    </svg>
+                                  ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgb(216, 15, 156)" strokeWidth="2">
+                                      <circle cx="12" cy="8" r="7" />
+                                      <line x1="12" y1="15" x2="12" y2="22" />
+                                      <line x1="9" y1="19" x2="15" y2="19" />
+                                    </svg>
+                                  )}
+                                  {animal.gender}
+                                </span>
+                              </p>
+                            </div>
+                            <p><strong>Age:</strong> {animal.age} years</p>
+                            {animal.size && <p><strong>Size:</strong> {animal.size}</p>}
+                            {animal.race && <p><strong>Race:</strong> {animal.race}</p>}
+                            <p>{animal.description?.substring(0, 100)}{animal.description?.length > 100 ? '...' : ''}</p>
+                          </div>
+                        </Link>
                       </div>
-                      <div className={styles.animalInfo}>
-                        <h3>{animal.name}</h3>
-                        <div className={styles.infoRow}>
-                          <p><strong>Species:</strong> {animal.species}</p>
-                          <p className={styles.gender}>
-                            <strong>Gender:</strong> 
-                            <span className={styles.genderIcon}>
-                              {animal.gender === 'Male' ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2">
-                                  <circle cx="10.5" cy="10.5" r="7.5" />
-                                  <line x1="18" y1="18" x2="22" y2="22" />
-                                  <line x1="22" y1="15" x2="22" y2="22" />
-                                  <line x1="15" y1="22" x2="22" y2="22" />
-                                </svg>
-                              ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgb(216, 15, 156)" strokeWidth="2">
-                                  <circle cx="12" cy="8" r="7" />
-                                  <line x1="12" y1="15" x2="12" y2="22" />
-                                  <line x1="9" y1="19" x2="15" y2="19" />
-                                </svg>
-                              )}
-                              {animal.gender}
-                            </span>
-                          </p>
-                        </div>
-                        <p><strong>Age:</strong> {animal.age} years</p>
-                        <p><strong>Size:</strong> {animal.size}</p>
-                        <p>{animal.description}</p>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className={styles.noResults}>No animals match your search criteria.</div>
                 )}
