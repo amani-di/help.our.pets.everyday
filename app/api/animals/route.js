@@ -4,7 +4,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
 import { Readable } from 'stream';
-import { authOptions } from '../../../../hope-app/app/api/auth/[...nextauth]/route';
+import { authOptions } from '../auth/[...nextauth]/route';
 import { createAnimalObject, validateAnimal } from '../../models/animals';
 
 const uri = process.env.MONGODB_URI;

@@ -1,6 +1,6 @@
 // app/api/participants/route.js
 import { NextResponse } from 'next/server';
-import { connectDB } from '../../../../hope-app/app/config/mongodb';
+import { connectDB } from '../../config/mongodb';
 import { ObjectId } from 'mongodb';
 
 // Import conditionnel de nodemailer avec gestion d'erreur

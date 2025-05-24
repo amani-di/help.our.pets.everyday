@@ -1,8 +1,8 @@
 // app/api/adoptiondemande/route.js
 import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
-import { authOptions } from '../../../../hope-app/app/api/auth/[...nextauth]/route';
-import { connectDB } from '../../../../hope-app/app/config/mongodb';
+import { authOptions } from '../auth/[...nextauth]/route';
+import { connectDB } from '../../config/mongodb';
 
 export async function POST(request) {
   try {

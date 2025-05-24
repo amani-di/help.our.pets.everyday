@@ -1,8 +1,8 @@
 // app/api/mesdemandesadoption/route.js
 import { NextResponse } from 'next/server';
-import { connectDB } from '../../../../hope-app/app/config/mongodb';
+import { connectDB } from '../../config/mongodb';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../../hope-app/app/api/auth/[...nextauth]/route';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 // Route pour récupérer les demandes d'adoption envoyées par l'utilisateur connecté
 export async function GET(request) {

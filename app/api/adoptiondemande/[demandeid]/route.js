@@ -2,8 +2,8 @@
 import { ObjectId } from 'mongodb';
 import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
-import { authOptions } from '../../../../../hope-app/app/api/auth/[...nextauth]/route';
-import { connectDB } from '../../../../../hope-app/app/config/mongodb';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import { connectDB } from '../../../config/mongodb';
 
 // Mettre à jour le statut d'une demande d'adoption (accepter/rejeter)
 export async function PATCH(request, { params }) {

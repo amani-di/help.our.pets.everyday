@@ -1,9 +1,9 @@
 /* prendresoin.module.css */
 /* Variables pour les couleurs et thèmes */
-:root {
+/*:root {
   --primary-color: #ff7f24; /* Orange comme couleur principale */
-  --secondary-color: #ffdfbf;
-  --accent-color: #ff9a56;
+  /*--secondary-color: #ffdfbf;*/
+  /*--accent-color: #ff9a56;
   --text-color: #333333;
   --light-text: #666666;
   --background-color: #f8f9fa;
@@ -16,7 +16,7 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --navbar-height: 70px; /* Estimation de la hauteur de votre navbar */
-}
+/*}*/
 
 /* Styles de base pour la page - plus d'espace vertical */
 .pageContainer {

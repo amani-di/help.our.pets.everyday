@@ -1,6 +1,6 @@
 // /api/article/[animal]/route.js
 import { NextResponse } from 'next/server';
-import { connectDB } from '../../../../../hope-app/app/config/mongodb';
+import { connectDB } from '../../../config/mongodb';
 
 export async function GET(request, context) {
   try {

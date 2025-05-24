@@ -6,7 +6,7 @@ import Link from 'next/link';
 import styles from '../styles/abuseReports.module.css';
 
 // This would be replaced with an actual API call in production
-import reportsData from './reports.json';
+ 
 
 export default function AbuseReportsPage() {
   const [abuseReports, setAbuseReports] = useState([]);
