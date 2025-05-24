@@ -1,10 +1,11 @@
-import { MongoClient, ObjectId } from 'mongodb';
+// app/api/animals/route.js (modifié)
 import { v2 as cloudinary } from 'cloudinary';
+import { MongoClient, ObjectId } from 'mongodb';
+import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
 import { Readable } from 'stream';
+import { authOptions } from '../../../../hope-app/app/api/auth/[...nextauth]/route';
 import { createAnimalObject, validateAnimal } from '../../models/animals';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]/route';
 
 const uri = process.env.MONGODB_URI;
 
@@ -82,21 +83,7 @@ async function isAuthenticated(request) {
   };
 }
 
-// Fonction pour mapper le type d'utilisateur aux noms de collection
-function mapUserTypeToCollection(userType) {
-  switch (userType) {
-    case 'owner':
-      return 'user';
-    case 'vet':
-      return 'veterinaire';
-    case 'association':
-      return 'association';
-    case 'store':
-      return 'animalerie';
-    default:
-      return userType;
-  }
-}
+// Code complet corrigé pour la fonction POST dans app/api/animals/route.js
 
 export async function POST(request) {
   try {
@@ -114,19 +101,84 @@ export async function POST(request) {
     // Se connecter à MongoDB
     const db = await connectDB();
     
-    // Créer la collection si elle n'existe pas
-    if (!(await db.listCollections({ name: 'animals' }).toArray()).length) {
-      await db.createCollection('animals');
-    }
-    
     // Récupérer les données du formulaire multipart
     const formData = await request.formData();
+    
+    // Récupérer les IDs de l'espèce et de la race
+    const speciesId = formData.get('speciesId');
+    const raceId = formData.get('raceId');
+    
+    // Vérifier que les ID sont valides
+    if (!ObjectId.isValid(speciesId)) {
+      return NextResponse.json({
+        success: false,
+        message: 'ID d\'espèce invalide'
+      }, { status: 400 });
+    }
+    
+    // Vérifier si l'espèce existe
+    const speciesCollection = db.collection('species');
+    const speciesDoc = await speciesCollection.findOne({ _id: new ObjectId(speciesId) });
+    
+    if (!speciesDoc) {
+      return NextResponse.json({
+        success: false,
+        message: 'Espèce non trouvée dans la base de données'
+      }, { status: 404 });
+    }
+    
+    // Vérifier si la race existe (si fournie)
+    let raceDoc = null;
+    if (raceId && ObjectId.isValid(raceId)) {
+      const racesCollection = db.collection('races');
+      
+      // Convertir speciesId en chaîne pour la comparaison
+      const speciesIdString = speciesId.toString();
+      
+      console.log('Recherche de race avec:', {
+        _id: new ObjectId(raceId),
+        speciesId: speciesIdString
+      });
+      
+      // Rechercher par speciesId en tant que chaîne de caractères
+      raceDoc = await racesCollection.findOne({ 
+        _id: new ObjectId(raceId),
+        speciesId: speciesIdString
+      });
+      
+      // Si toujours non trouvé, essayer avec d'autres formats possibles
+      if (!raceDoc) {
+        // Essayer de rechercher uniquement par ID de race sans vérifier l'espèce
+        console.log('Race non trouvée avec speciesId en chaîne. Recherche simple par ID...');
+        const simpleRaceDoc = await racesCollection.findOne({ _id: new ObjectId(raceId) });
+        
+        if (simpleRaceDoc) {
+          console.log('Race trouvée, mais problème de correspondance avec l\'espèce:', {
+            raceSpeciesId: simpleRaceDoc.speciesId,
+            requestedSpeciesId: speciesIdString
+          });
+          
+          // Accepter la race même si le format de speciesId ne correspond pas exactement
+          // Cela permet d'être flexible avec les différents formats d'ID
+          raceDoc = simpleRaceDoc;
+        } else {
+          console.log('Race introuvable par ID:', raceId);
+          return NextResponse.json({
+            success: false,
+            message: 'Race non trouvée dans la base de données'
+          }, { status: 404 });
+        }
+      }
+    }
     
     // Préparer les données pour l'animal
     const animalData = {
       animalName: formData.get('animalName'),
-      animalType: formData.get('animalType'),
-      race: formData.get('race'),
+      speciesId: new ObjectId(speciesId),
+      speciesCode: speciesDoc.code,
+      raceId: raceDoc ? new ObjectId(raceId) : null,
+      raceCode: raceDoc ? raceDoc.code : null,
+      raceName: raceDoc ? raceDoc.name : null,
       age: formData.get('age'),
       gender: formData.get('gender'),
       description: formData.get('description'),
@@ -139,6 +191,7 @@ export async function POST(request) {
       publishType: user.userType,
       publishId: user.id,
       publishDate: new Date(),
+      status: "available", // Statut par défaut
     };
 
     // Traiter les photos
@@ -197,16 +250,20 @@ export async function POST(request) {
   }
 }
 
-// Récupérer toutes les annonces
+// Fonction GET corrigée pour récupérer les annonces avec cohérence dans le traitement des IDs
+
+// app/api/animals/route.js - GET modifiée pour être cohérente avec POST
 export async function GET(request) {
   try {
     const db = await connectDB();
     const animalsCollection = db.collection('animals');
     
-    // Vérifier si un filtre est appliqué pour le type de publicateur
+    // Vérifier si un filtre est appliqué
     const { searchParams } = new URL(request.url);
     const publishType = searchParams.get('publishType');
     const publishId = searchParams.get('publishId');
+    const speciesId = searchParams.get('speciesId');
+    const raceId = searchParams.get('raceId');
     
     let query = {};
     
@@ -219,8 +276,72 @@ export async function GET(request) {
       query.publishId = publishId;
     }
     
-    // Récupérer les animaux depuis la collection avec les filtres
-    const animals = await animalsCollection.find(query).toArray();
+    // Gérer le speciesId de manière cohérente
+    if (speciesId) {
+      // Si c'est un ObjectId valide, l'utiliser comme tel
+      if (ObjectId.isValid(speciesId)) {
+        console.log('Recherche d\'animaux par speciesId (ObjectId):', speciesId);
+        query.speciesId = new ObjectId(speciesId);
+      } else {
+        // Sinon, rechercher par code d'espèce
+        console.log('Recherche d\'animaux par speciesCode:', speciesId);
+        query.speciesCode = speciesId;
+      }
+    }
+    
+    // Gérer le raceId de manière cohérente
+    if (raceId) {
+      // Si c'est un ObjectId valide, l'utiliser comme tel
+      if (ObjectId.isValid(raceId)) {
+        console.log('Recherche d\'animaux par raceId (ObjectId):', raceId);
+        query.raceId = new ObjectId(raceId);
+      } else {
+        // Sinon, rechercher par code de race
+        console.log('Recherche d\'animaux par raceCode:', raceId);
+        query.raceCode = raceId;
+      }
+    }
+    
+    console.log('Requête de recherche animaux:', JSON.stringify(query));
+    
+    // Pipeline d'agrégation pour joindre les informations d'espèce et de race
+    const pipeline = [
+      { $match: query },
+      {
+        $lookup: {
+          from: 'species',
+          localField: 'speciesId',
+          foreignField: '_id',
+          as: 'speciesDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$speciesDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'races',
+          localField: 'raceId',
+          foreignField: '_id',
+          as: 'raceDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$raceDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: { publishDate: -1 } // Trier par date de publication (plus récent d'abord)
+      }
+    ];
+    
+    const animals = await animalsCollection.aggregate(pipeline).toArray();
+    console.log(`${animals.length} animaux trouvés`);
     
     return NextResponse.json({ 
       success: true, 
@@ -231,41 +352,6 @@ export async function GET(request) {
     return NextResponse.json({
       success: false,
       message: `Erreur lors de la récupération des animaux: ${error.message}`
-    }, { status: 500 });
-  }
-}
-
-// Route pour récupérer les annonces d'un utilisateur spécifique
-export async function GET_MY_ANIMALS(request) {
-  try {
-    // Vérifier l'authentification
-    const auth = await isAuthenticated(request);
-    if (!auth.authenticated) {
-      return NextResponse.json({
-        success: false,
-        message: 'Authentification requise pour accéder à vos annonces'
-      }, { status: 401 });
-    }
-    
-    const { user } = auth;
-    const db = await connectDB();
-    const animalsCollection = db.collection('animals');
-    
-    // Récupérer les annonces publiées par cet utilisateur
-    const animals = await animalsCollection.find({ 
-      publishType: user.userType,
-      publishId: user.id
-    }).toArray();
-    
-    return NextResponse.json({ 
-      success: true, 
-      data: animals 
-    });
-  } catch (error) {
-    console.error('Erreur lors de la récupération de vos animaux:', error);
-    return NextResponse.json({
-      success: false,
-      message: `Erreur: ${error.message}`
     }, { status: 500 });
   }
 }

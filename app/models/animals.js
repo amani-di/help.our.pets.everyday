@@ -1,4 +1,5 @@
 // models/animals.js
+import { ObjectId } from 'mongodb';
 
 /**
  * Crée un objet animal validé à partir des données brutes
@@ -9,8 +10,10 @@ export function createAnimalObject(data) {
   return {
     // Informations de base sur l'animal
     animalName: data.animalName,
-    animalType: data.animalType,
-    race: data.race || '',
+    speciesId: data.speciesId instanceof ObjectId ? data.speciesId : new ObjectId(data.speciesId),
+    speciesCode: data.speciesCode || null,
+    raceId: data.raceId ? (data.raceId instanceof ObjectId ? data.raceId : new ObjectId(data.raceId)) : null,
+    raceCode: data.raceCode || null,
     age: data.age || '',
     gender: data.gender || '',
     description: data.description || '',
@@ -24,13 +27,13 @@ export function createAnimalObject(data) {
     // Média
     photos: data.photos || [],
     
-    // Informations sur le publicateur (qui l'a mis en ligne)
+    // Informations sur le publicateur
     publishType: data.publishType,
     publishId: data.publishId,
     publishDate: data.publishDate || new Date(),
     
     // État de l'annonce
-    status: 'active', // active, adopted, deleted
+    status: 'active',
     createdAt: new Date(),
     updatedAt: new Date()
   };
@@ -47,9 +50,11 @@ export function validateAnimal(animal) {
     throw new Error('Le nom de l\'animal est obligatoire');
   }
   
-  if (!animal.animalType) {
-    throw new Error('Le type d\'animal est obligatoire');
+  if (!animal.speciesId) {
+    throw new Error('L\'espèce de l\'animal est obligatoire');
   }
+  
+  // La race peut être optionnelle selon vos besoins
   
   if (!animal.ownerName) {
     throw new Error('Le nom du propriétaire est obligatoire');
@@ -74,11 +79,6 @@ export function validateAnimal(animal) {
   
   if (!animal.publishId) {
     throw new Error('L\'ID du publicateur est obligatoire');
-  }
-  
-  // Autres validations potentielles
-  if (animal.animalType !== 'cat' && animal.animalType !== 'dog') {
-    throw new Error('Le type d\'animal doit être chat ou chien');
   }
   
   return true;

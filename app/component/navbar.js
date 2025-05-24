@@ -2,8 +2,28 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
-import { FaUser, FaTimes, FaHome, FaInfoCircle, FaEnvelope, FaTools, FaBars, FaHeart, FaCalendarAlt, FaPaw, FaShoppingCart, FaStore, FaHandHoldingHeart } from 'react-icons/fa';
+import { 
+  FaUser, 
+  FaTimes, 
+  FaHome, 
+  FaHandHoldingHeart, // Pour Donate (plus expressif)
+  FaExclamationTriangle, // Pour Report (plus expressif)
+  FaBullhorn, // Pour Advertise Animal (plus expressif)
+  FaBars, 
+  FaHeart, 
+  FaCalendarAlt, 
+  FaPaw, 
+  FaShoppingCart, 
+  FaStore, 
+  FaStethoscope, // Pour vétérinaire
+  FaNewspaper, // Pour articles
+  FaHeadphones, // Pour campagnes
+  FaShieldAlt, // Pour abuse reports
+  FaPlus, // Pour Post your Pet
+  FaUsers // Pour Rescue campaigns
+} from 'react-icons/fa';
 import styles from '../styles/navbar.module.css';
 
 const Navbar = () => {
@@ -83,8 +103,7 @@ const Navbar = () => {
     if (!session?.user) return [];
     
     const commonLinks = [
-      { label: 'My favorites', href: '/favorites', icon: <FaHeart /> },
-      { label: 'Edit my profil', href: `/profile/${session.user.userType}/${session.user.id}`, icon: <FaUser /> },
+      { label: 'My Account', href: `/profile/${session.user.userType}/${session.user.id}`, icon: <FaUser /> },
     ];
     
     switch (session.user.userType) {
@@ -92,27 +111,37 @@ const Navbar = () => {
         return [
           ...commonLinks,
           { label: 'My pets', href: '/my-pets', icon: <FaPaw /> },
-          { label: 'Mes adoptions', href: '/my-adoptions', icon: <FaHandHoldingHeart /> }
+          { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
+          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> },
         ];
+
       case 'vet':
         return [
           ...commonLinks,
-          { label: 'Mes patients', href: '/my-patients', icon: <FaPaw /> },
-          { label: 'Calendrier', href: '/calendar', icon: <FaCalendarAlt /> },
+          { label: 'Mes patients', href: '/my-patients', icon: <FaStethoscope /> },
+          { label: 'Publish Articles', href: '/articleform', icon: <FaNewspaper /> },
+          { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
+          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> }
         ];
       case 'association':
         return [
           ...commonLinks,
-          { label: 'Gérer les animaux', href: '/manage-animals', icon: <FaPaw /> },
-          { label: 'Demandes d\'adoption', href: '/adoption-requests', icon: <FaHandHoldingHeart /> },
-          { label: 'Événements', href: '/events', icon: <FaCalendarAlt /> }
+          { label: ' Annonce a compaign', href: '/compagneform', icon: <FaHeadphones/> },
+          { label: 'Publish Articles', href: '/articleform', icon: <FaNewspaper /> },
+          { label: 'Abuse Reports', href: '/', icon: <FaShieldAlt /> },
+          { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
+          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> }
         ];
       case 'store':
         return [
           ...commonLinks,
           { label: 'Publish products', href: '/annoncerproduit', icon: <FaStore /> },
-          { label: 'Promotions', href: '/promotions', icon: <FaShoppingCart /> },
-          { label: 'Commandes', href: '/orders', icon: <FaShoppingCart /> }
+          { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
+          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> }
         ];
       default:
         return commonLinks;
@@ -140,25 +169,31 @@ const Navbar = () => {
         <div className={styles.logoSection}>
           <Link href="/" className={styles.logoWrapper}>
             <div className={styles.logo}>
-              {/* Emplacement pour votre logo */}
-              <div className={styles.logoPlaceholder}>LOGO</div>
-            </div>
+              <Image
+                src="/images/" 
+                alt="Pet Adoption Logo"
+                width={150}
+                height={50}
+                className={styles.logoImage}
+                priority
+              />
+            </div>  
           </Link>
           <div className={styles.links}>
             <Link href="/" className={styles.link}>
               <FaHome className={styles.linkIcon} />
               <span>Home</span>
             </Link>
-            <Link href="/Report" className={styles.link}>
-              <FaTools className={styles.linkIcon} />
+            <Link href="/DisappearancesReport" className={styles.link}>
+              <FaExclamationTriangle className={styles.linkIcon} />
               <span>Report</span>
             </Link>
             <Link href="/cataloguedon" className={styles.link}>
-              <FaInfoCircle className={styles.linkIcon} />
+              <FaHandHoldingHeart className={styles.linkIcon} />
               <span>Donate</span>
             </Link>
-            <Link href="/" className={styles.link}>
-              <FaEnvelope className={styles.linkIcon} />
+            <Link href="/annonceanimal" className={styles.link}>
+              <FaBullhorn className={styles.linkIcon} />
               <span>Advertise Animal for Adoption</span>
             </Link>
           </div>
@@ -228,22 +263,36 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link href="/" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
-                      <FaTools className={styles.sidebarLinkIcon} />
+                      <FaExclamationTriangle className={styles.sidebarLinkIcon} />
                       <span>Report</span>
                     </Link>
                   </li>
                   <li>
                     <Link href="/" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
-                      <FaInfoCircle className={styles.sidebarLinkIcon} />
+                      <FaHandHoldingHeart className={styles.sidebarLinkIcon} />
                       <span>Donate</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
-                      <FaEnvelope className={styles.sidebarLinkIcon} />
+                    <Link href="/annonceanimal" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
+                      <FaBullhorn className={styles.sidebarLinkIcon} />
                       <span>Advertise Animal for Adoption</span>
                     </Link>
                   </li>
+                  
+                  <li>
+                    <Link href="/cataloguecompagne" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
+                      <FaUsers className={styles.sidebarLinkIcon} />
+                      <span>Rescue campaigns </span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/catalogueproduit" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
+                      <FaUsers className={styles.sidebarLinkIcon} />
+                      <span>Specials Offers</span>
+                    </Link>
+                  </li>
+
                   
                   {/* Fonctionnalités spécifiques au type d'utilisateur */}
                   {isAuthenticated && (
@@ -254,18 +303,20 @@ const Navbar = () => {
                                         session.user.userType === 'store' ? 'Pet Store' : 
                                         'Pet Owner' }</span>
                       </li>
-                      {getUserTypeLinks().map((link, index) => (
-                        <li key={index}>
-                          <Link 
-                            href={link.href} 
-                            className={styles.sidebarLink}
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            {link.icon}
-                            <span>{link.label}</span>
-                          </Link>
-                        </li>
-                      ))}
+                      <div className={styles.mySpaceScrollContainer}>
+                        {getUserTypeLinks().map((link, index) => (
+                          <li key={index}>
+                            <Link 
+                              href={link.href} 
+                              className={styles.sidebarLink}
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {link.icon}
+                              <span>{link.label}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </div>
                     </>
                   )}
                 </ul>
@@ -288,7 +339,6 @@ const Navbar = () => {
                     >
                       Sign up
                     </Link>
-                    
                   </div>
                 )}
               </div>
@@ -329,20 +379,22 @@ const Navbar = () => {
                 </div>
               </div>
               
-              <ul className={styles.userLinks}>
-                {getUserTypeLinks().map((link, index) => (
-                  <li key={index}>
-                    <Link 
-                      href={link.href} 
-                      className={styles.userLink}
-                      onClick={() => setUserModalOpen(false)}
-                    >
-                      {link.icon}
-                      <span>{link.label}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className={styles.userLinksScrollContainer}>
+                <ul className={styles.userLinks}>
+                  {getUserTypeLinks().map((link, index) => (
+                    <li key={index}>
+                      <Link 
+                        href={link.href} 
+                        className={styles.userLink}
+                        onClick={() => setUserModalOpen(false)}
+                      >
+                        {link.icon}
+                        <span>{link.label}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
               
               <div className={styles.userModalFooter}>
                 <button 

@@ -1,16 +1,24 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
-import { 
-  User, Mail, Lock, Phone, MapPin, 
-  Building, FileText, Store, Heart,
-  ChevronLeft, ChevronRight, HeartPulse, Clock }  from 'lucide-react';
+import {
+  Building,
+  ChevronLeft, ChevronRight,
+  Clock,
+  FileText,
+  HeartPulse,
+  Lock,
+  Mail,
+  MapPin,
+  Phone,
+  Store,
+  User
+} from 'lucide-react';
+import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import styles from '../styles/signuplogin.module.css';
-import redirectStyles from '../styles/signuplogin.module.css';
-import { signup } from '../services/clientauthservices';
 import { useRouter } from 'next/navigation';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { signup } from '../services/clientauthservices';
+import { default as redirectStyles, default as styles } from '../styles/signuplogin.module.css';
 
 const Signup = () => {
   const router = useRouter();
@@ -36,8 +44,8 @@ const Signup = () => {
   // Validation patterns
   const validationPatterns = {
     email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-    phone: /^(0)(5|6|7)[0-9]{8}$/,  // Algerian mobile numbers (05, 06, 07)
-    licenseNumber: /^ONV-[0-9]{2}-[0-9]{4}$/  // Format ONV-xx-yyyy where xx and yyyy are digits
+    phone: /^(0)(5|6|7)[0-9]{8}$/,  
+    licenseNumber: /^ONV-[0-9]{2}-[0-9]{4}$/  
   };
 
   // Validation function
@@ -158,9 +166,9 @@ const Signup = () => {
       });
       
       if (result.error) {
-        setError('incorrect Id. Try again.');
+        setError('Email ou mot de passe incorrect');
       } else {
-        // La redirection sera gérée par useSession dans useEffect
+        // Redirection vers la page d'accueil
         router.push('/');
       }
     } catch (err) {
@@ -170,6 +178,7 @@ const Signup = () => {
       setLoading(false);
     }
   };
+
 
   // Handle signup submission
   const handleSignupSubmit = async (e) => {

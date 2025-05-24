@@ -12,13 +12,13 @@ const AnimalForm = () => {
   const [formData, setFormData] = useState({
     // Info sur l'animal
     animalName: '',
-    animalType: '',
-    race: '',
+    speciesId: '',
+    speciesCode: '',
+    raceId: '',
+    raceCode: '',
     age: '',
     gender: '',
     description: '',
-    publishType: '',
-    publishId:'',
     
     // Info sur le propriétaire - seront pré-remplies si l'utilisateur est connecté
     ownerName: '',
@@ -27,10 +27,18 @@ const AnimalForm = () => {
     ownerAddress: '',
   });
   
+  // États pour les listes déroulantes
+  const [species, setSpecies] = useState([]);
+  const [races, setRaces] = useState([]);
+  const [selectedSpeciesName, setSelectedSpeciesName] = useState(''); // Pour afficher le nom de l'espèce sélectionnée
+  const [selectedRaceName, setSelectedRaceName] = useState(''); // Pour afficher le nom de la race sélectionnée
+  const [racesLoading, setRacesLoading] = useState(false); // Pour indiquer le chargement des races
+  
   const [photos, setPhotos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   
   // État pour la gestion des étapes
   const [currentStep, setCurrentStep] = useState(1);
@@ -38,7 +46,63 @@ const AnimalForm = () => {
   
   const fileInputRef = useRef(null);
   
-  // Vérifier si l'utilisateur est connecté
+  // Charger les espèces depuis l'API
+  const fetchSpecies = async () => {
+    try {
+      const response = await fetch('/api/species');
+      const result = await response.json();
+      
+      if (result.success) {
+        setSpecies(result.data);
+        console.log('Espèces chargées:', result.data);
+      } else {
+        console.error('Erreur lors du chargement des espèces:', result.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des espèces:', error);
+    }
+  };
+  
+  // Charger les races pour une espèce spécifique
+  const fetchRacesBySpecies = async (speciesId) => {
+    if (!speciesId) {
+      setRaces([]);
+      return;
+    }
+    
+    try {
+      setRacesLoading(true);
+      const response = await fetch(`/api/races?speciesId=${speciesId}`);
+      const result = await response.json();
+      
+      if (result.success) {
+        // Ajout de logging pour débugger
+        console.log('Races chargées:', result.data);
+        
+        // Vérifier que chaque race a un nom d'affichage
+        const processedRaces = result.data.map(race => {
+          if (!race.name && race.code) {
+            // Si le nom est manquant mais que le code existe, extraire le nom de la race du code
+            const parts = race.code.split('-');
+            race.name = parts.length > 1 ? parts[1] : race.code;
+          }
+          return race;
+        });
+        
+        setRaces(processedRaces);
+      } else {
+        console.error('Erreur lors du chargement des races:', result.message);
+        setRaces([]);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des races:', error);
+      setRaces([]);
+    } finally {
+      setRacesLoading(false);
+    }
+  };
+
+  // Vérifier si l'utilisateur est connecté et charger les données
   useEffect(() => {
     if (status === 'loading') return;
     
@@ -56,7 +120,21 @@ const AnimalForm = () => {
         ownerEmail: session.user.email || '',
       }));
     }
+    
+    // Charger les espèces depuis l'API
+    fetchSpecies();
+    setIsLoading(false);
+    
   }, [session, status, router]);
+  
+  // Charger les races lorsqu'une espèce est sélectionnée
+  useEffect(() => {
+    if (formData.speciesId) {
+      fetchRacesBySpecies(formData.speciesId);
+    } else {
+      setRaces([]);
+    }
+  }, [formData.speciesId]);
   
   // Mise à jour des classes des sections lors du changement d'étape
   useEffect(() => {
@@ -84,10 +162,45 @@ const AnimalForm = () => {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    
+    if (name === 'speciesId') {
+      // Trouver l'espèce sélectionnée pour récupérer son code
+      const selectedSpecies = species.find(s => s._id === value);
+      
+      if (selectedSpecies) {
+        // Utiliser le champ 'code' comme nom d'affichage de l'espèce
+        setSelectedSpeciesName(selectedSpecies.code);
+        setFormData({
+          ...formData,
+          speciesId: value,
+          speciesCode: selectedSpecies.code,
+          raceId: '',  // Réinitialiser race quand l'espèce change
+          raceCode: '' // Réinitialiser le code de race
+        });
+        setSelectedRaceName(''); // Réinitialiser le nom de race affiché
+        console.log(`Espèce sélectionnée: ${selectedSpecies.code} (ID: ${selectedSpecies._id})`);
+      }
+    } else if (name === 'raceId') {
+      // Trouver la race sélectionnée pour récupérer son code et son nom
+      const selectedRace = races.find(r => r._id === value);
+      
+      if (selectedRace) {
+        // Utiliser le champ 'name' comme nom d'affichage de la race ou le code si le nom n'existe pas
+        const displayName = selectedRace.name || selectedRace.code || "Race sans nom";
+        setSelectedRaceName(displayName);
+        setFormData({
+          ...formData,
+          raceId: value,
+          raceCode: selectedRace.code
+        });
+        console.log(`Race sélectionnée: ${displayName} (${selectedRace.code})`);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
   
   const handlePhotoUpload = (e) => {
@@ -140,7 +253,7 @@ const AnimalForm = () => {
     
     try {
       // Validations
-      if (!formData.animalName || !formData.animalType || !formData.ownerName || !formData.ownerEmail || !formData.ownerPhone) {
+      if (!formData.animalName || !formData.speciesId || !formData.ownerName || !formData.ownerEmail || !formData.ownerPhone) {
         throw new Error('Veuillez remplir tous les champs obligatoires.');
       }
       
@@ -154,6 +267,12 @@ const AnimalForm = () => {
       // Ajouter les données textuelles
       for (const [key, value] of Object.entries(formData)) {
         formDataToSubmit.append(key, value);
+      }
+      
+      // Ajouter les informations sur le publicateur depuis la session
+      if (session && session.user) {
+        formDataToSubmit.append('publishType', session.user.userType || 'individual');
+        formDataToSubmit.append('publishId', session.user.id);
       }
       
       // Ajouter les photos
@@ -185,8 +304,10 @@ const AnimalForm = () => {
       setTimeout(() => {
         setFormData({
           animalName: '',
-          animalType: '',
-          race: '',
+          speciesId: '',
+          speciesCode: '',
+          raceId: '',
+          raceCode: '',
           age: '',
           gender: '',
           description: '',
@@ -202,6 +323,8 @@ const AnimalForm = () => {
         setPhotos([]);
         setCurrentStep(1);
         setShowModal(false);
+        setSelectedSpeciesName('');
+        setSelectedRaceName('');
         
         // Rediriger vers la page des annonces
         router.push('/catalogueanimal');
@@ -215,15 +338,15 @@ const AnimalForm = () => {
     }
   };
   
-  // Afficher un message de chargement pendant la vérification de session
-  if (status === 'loading') {
-    return <div className={styles['loading']}>Chargement...</div>;
+  // Afficher un message de chargement pendant la vérification de session ou le chargement des données
+  if (status === 'loading' || isLoading) {
+    return <div className={styles['loading']}>Loading...</div>;
   }
   
   // Le composant principal ne sera rendu que si l'utilisateur est connecté
   return (
     <div className={styles['animal-form-container']}>
-      <h1 className={styles.heading}>Publier une annonce pour votre animal</h1>
+      <h1 className={styles.heading}>Post your pet for adoption</h1>
       
       {error && (
         <div className={styles['error-message']}>
@@ -253,7 +376,7 @@ const AnimalForm = () => {
         <div className={styles['success-modal']}>
           <div className={styles['modal-content']}>
             <div className={styles['success-icon']}>✓</div>
-            <p>Votre annonce a été publiée avec succès !</p>
+            <p>Your annonce was successfully published !</p>
           </div>
         </div>
       )}
@@ -261,14 +384,14 @@ const AnimalForm = () => {
       <form onSubmit={handleSubmit}>
         {/* Section Informations sur l'animal */}
         <div className={`${styles['form-section']} ${currentStep === 1 ? styles.active : ''}`}>
-          <h3 className={styles['section-title']}>Informations sur l'animal :</h3>
+          <h3 className={styles['section-title']}>Animal informations :</h3>
           
           <div className={styles['form-group']}>
             <input
               type="text"
               id="animalName"
               name="animalName"
-              placeholder='Nom de animal'
+              placeholder='Animal name'
               value={formData.animalName}
               onChange={handleChange}
               required
@@ -278,29 +401,46 @@ const AnimalForm = () => {
           
           <div className={styles['form-group']}>
             <select
-              id="animalType"
-              name="animalType"
-              value={formData.animalType}
+              id="speciesId"
+              name="speciesId"
+              value={formData.speciesId}
               onChange={handleChange}
               required
               className={styles['select-field']}
             >
-              <option value="">Type d'animal</option>
-              <option value="cat">Chat</option>
-              <option value="dog">Chien</option>
+              <option value="">
+                {selectedSpeciesName ? selectedSpeciesName : "Select a species"}
+              </option>
+              {species.map(specie => (
+                <option key={specie._id} value={specie._id}>
+                  {specie.code}
+                </option>
+              ))}
             </select>
           </div>
           
           <div className={styles['form-group']}>
-            <input
-              type="text" 
-              id="race"
-              name="race"
-              placeholder='Race'
-              value={formData.race}
+            <select
+              id="raceId"
+              name="raceId"
+              value={formData.raceId}
               onChange={handleChange}
-              className={styles['input-field']}
-            />
+              className={styles['select-field']}
+              disabled={!formData.speciesId || racesLoading}
+            >
+              <option value="">
+                {racesLoading ? "Loading breeds..." : selectedRaceName ? selectedRaceName : "Select a breed"}
+              </option>
+              {races.length > 0 ? (
+                races.map(race => (
+                  <option key={race._id} value={race._id}>
+                    {race.name || race.code || "Race sans nom"}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>No breeds available for this species</option>
+              )}
+            </select>
           </div>
           
           <div className={styles['form-row']}>
@@ -309,7 +449,7 @@ const AnimalForm = () => {
                 type="text"
                 id="age"
                 name="age"
-                placeholder='Âge'
+                placeholder='Age'
                 value={formData.age}
                 onChange={handleChange}
                 className={styles['input-field']}
@@ -324,9 +464,9 @@ const AnimalForm = () => {
                 onChange={handleChange}
                 className={styles['select-field']}
               >
-                <option value="">Genre</option>
-                <option value="male">Mâle</option>
-                <option value="female">Femelle</option>
+                <option value="">Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
               </select>
             </div>
           </div>
@@ -344,7 +484,7 @@ const AnimalForm = () => {
           </div>
           
           <div className={styles['form-navigation']}>
-            <button type="button" className={`${styles['nav-btn']} ${styles.next}`} onClick={nextStep}>Suivant</button>
+            <button type="button" className={`${styles['nav-btn']} ${styles.next}`} onClick={nextStep}>Next</button>
           </div>
         </div>
         
@@ -361,7 +501,7 @@ const AnimalForm = () => {
                 onClick={() => fileInputRef.current.click()}
                 disabled={photos.length >= 5}
               >
-                Ajouter des photos ({5 - photos.length} restantes)
+               Upload photos ({5 - photos.length} remaining)
               </button>
               <input
                 type="file"
@@ -392,21 +532,21 @@ const AnimalForm = () => {
           </div>
           
           <div className={styles['form-navigation']}>
-            <button type="button" className={`${styles['nav-btn']} ${styles.prev}`} onClick={prevStep}>Précédent</button>
-            <button type="button" className={`${styles['nav-btn']} ${styles.next}`} onClick={nextStep}>Suivant</button>
+            <button type="button" className={`${styles['nav-btn']} ${styles.prev}`} onClick={prevStep}>Back</button>
+            <button type="button" className={`${styles['nav-btn']} ${styles.next}`} onClick={nextStep}>Next</button>
           </div>
         </div>
         
         {/* Section Informations du propriétaire */}
         <div className={`${styles['form-section']} ${currentStep === 3 ? styles.active : ''} ${currentStep === 3 ? styles['last-step'] : ''}`}>
-          <h3 className={styles['section-title']}>Informations de contact :</h3>
+          <h3 className={styles['section-title']}> Contact informations :</h3>
           
           <div className={styles['form-group']}>
             <input
               type="text"
               id="ownerName"
               name="ownerName"
-              placeholder='Nom complet'
+              placeholder='Owner name'
               value={formData.ownerName}
               onChange={handleChange}
               required
@@ -433,7 +573,7 @@ const AnimalForm = () => {
                 type="tel"
                 id="ownerPhone"
                 name="ownerPhone"
-                placeholder='Téléphone'
+                placeholder='Phone number'
                 value={formData.ownerPhone}
                 onChange={handleChange}
                 required
@@ -447,7 +587,7 @@ const AnimalForm = () => {
               type="text"
               id="ownerAddress"
               name="ownerAddress"
-              placeholder='Adresse'
+              placeholder='Address'
               value={formData.ownerAddress}
               onChange={handleChange}
               className={styles['input-field']}
@@ -455,7 +595,7 @@ const AnimalForm = () => {
           </div>
           
           <div className={styles['form-navigation']}>
-            <button type="button" className={`${styles['nav-btn']} ${styles.prev}`} onClick={prevStep}>Précédent</button>
+            <button type="button" className={`${styles['nav-btn']} ${styles.prev}`} onClick={prevStep}>Back</button>
           </div>
           
           <div className={styles['form-actions']}>
@@ -464,7 +604,7 @@ const AnimalForm = () => {
               className={styles['submit-btn']}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Publication en cours...' : 'Publier l\'annonce'}
+              {isSubmitting ? 'Publication in progress...' : 'Publish '}
             </button>
           </div>
         </div>

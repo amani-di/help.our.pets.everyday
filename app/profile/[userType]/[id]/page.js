@@ -1,4 +1,5 @@
- 'use client'
+// app/profile/[userType]/[id]/page.js
+'use client'
 
 import Profile from '../../../component/profile';
 

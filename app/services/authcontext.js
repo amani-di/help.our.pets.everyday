@@ -1,5 +1,4 @@
-//services/authcontext
-'use client'
+/*'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { login as loginService, signup as signupService, logout as logoutService, getCurrentUser } from './clientauthservices';
@@ -21,16 +20,16 @@ export const AuthProvider = ({ children }) => {
     const checkAuthStatus = async () => {
       try {
         const currentUser = getCurrentUser();
-        
+
         if (!currentUser) {
           setLoading(false);
           return;
         }
-        
+
         // Récupérer les données utilisateur complètes
         const { userId, userType } = currentUser;
         const userData = await getUserData(userType, userId);
-        
+
         if (userData.success) {
           setUser({
             ...userData.user,
@@ -44,14 +43,14 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    
+
     checkAuthStatus();
   }, []);
 
   // Fonction de connexion
   const login = async (email, password) => {
     const result = await loginService(email, password);
-    
+
     if (result.success) {
       const currentUser = getCurrentUser();
       if (currentUser) {
@@ -64,19 +63,19 @@ export const AuthProvider = ({ children }) => {
         }
       }
     }
-    
+
     return result;
   };
 
   // Fonction d'inscription
   const signup = async (userData, userType) => {
     const result = await signupService(userType, userData);
-    
+
     if (result.success) {
       // Connexion automatique après inscription
       return await login(userData.email, userData.password);
     }
-    
+
     return result;
   };
 
@@ -104,3 +103,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default AuthContext;
+*/

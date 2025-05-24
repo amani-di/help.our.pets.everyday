@@ -1,4 +1,3 @@
-//api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectDB } from "../../../config/mongodb";
@@ -99,7 +98,7 @@ export const authOptions = {
     }
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/signuplogin",
     signOut: "/auth/signout",
     error: "/auth/error",
   },

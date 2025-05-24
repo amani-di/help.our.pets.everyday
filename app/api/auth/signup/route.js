@@ -1,4 +1,3 @@
-//api/auth/signup/route.js
 import { connectDB } from "../../../config/mongodb";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
