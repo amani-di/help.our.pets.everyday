@@ -2,7 +2,7 @@
 import { ObjectId } from 'mongodb';
 import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
-import { authOptions } from '../api/auth/[...nextauth]/route';
+import { authOptions } from '../../auth/[...nextauth]/route';
 import { connectDB } from '../../../config/mongodb';
 
 // Mettre à jour le statut d'une demande d'adoption (accepter/rejeter)

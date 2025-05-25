@@ -1,8 +1,8 @@
 //api/users/[userType]/[id]/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]/route';
-import { connectDB } from '../../config/mongodb';
+import { authOptions } from '../../../auth/[...nextauth]/route';
+import { connectDB } from '../../../config/mongodb';
 import { ObjectId } from 'mongodb';
 
 // Fonction helper pour mapper les types d'utilisateurs aux collections MongoDB
