@@ -79,7 +79,7 @@ const HeroCarousel = () => {
               <div className={styles.content}>
                 <h2 className={styles.title} dangerouslySetInnerHTML={{ __html: slide.title }}></h2>
                 <p className={styles.description}>{slide.description}</p>
-                <Link href="/AnimalCatalog" className={styles.adoptButton}>
+                <Link href="/catalogueanimal" className={styles.adoptButton}>
                   Adopt Now
                 </Link>
               </div>

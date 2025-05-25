@@ -1,7 +1,7 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import styles from '../styles/catalogueanimal.module.css'; 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import styles from '../styles/catalogueanimal.module.css';
 
 const AnimalCatalog = () => {
   // State for storing animal data
