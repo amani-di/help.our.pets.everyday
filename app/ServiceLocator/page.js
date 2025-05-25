@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import styles from './serviceLocator.module.css';
-import servicesData from './services.json';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import styles from '../styles/serviceLocator.module.css';
 
 // SVG Icons for the component
 const SearchIcon = () => (
@@ -50,6 +50,18 @@ const PetShopIcon = () => (
   </svg>
 );
 
+// Wilayas d'Algérie
+const ALGERIA_WILAYAS = [
+  "Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa", "Biskra",
+  "Béchar", "Blida", "Bouira", "Tamanrasset", "Tébessa", "Tlemcen", "Tiaret",
+  "Tizi Ouzou", "Alger", "Djelfa", "Jijel", "Sétif", "Saïda", "Skikda",
+  "Sidi Bel Abbès", "Annaba", "Guelma", "Constantine", "Médéa", "Mostaganem",
+  "M'Sila", "Mascara", "Ouargla", "Oran", "El Bayadh", "Illizi", "Bordj Bou Arréridj",
+  "Boumerdès", "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela",
+  "Souk Ahras", "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent",
+  "Ghardaïa", "Relizane"
+];
+
 export default function ServiceLocator() {
   const [filters, setFilters] = useState({
     veterinarian: true,
@@ -59,24 +71,106 @@ export default function ServiceLocator() {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredServices, setFilteredServices] = useState([]);
+  const [allServices, setAllServices] = useState({
+    veterinarian: [],
+    association: [],
+    petshop: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const searchParams = useSearchParams();
   
-  // Initialize with all services
+  // Fonction pour récupérer tous les services depuis l'API
+  const fetchAllServices = useCallback(async () => {
+    try {
+      console.log('Récupération des services...');
+      const response = await fetch('/api/services');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Réponse API:', data);
+      
+      if (data.success) {
+        return data.services || {
+          veterinarian: [],
+          association: [],
+          petshop: []
+        };
+      } else {
+        console.error('Erreur API:', data.message);
+        throw new Error(data.message || 'Erreur lors de la récupération des services');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des services:', error);
+      throw error;
+    }
+  }, []);
+
+  // Charger tous les services au montage du composant
+  useEffect(() => {
+    const loadAllServices = async () => {
+    setLoading(true);
+    setError(null);
+    
+      
+      try {
+        const services = await fetchAllServices();
+        console.log('Services chargés:', services);
+        setAllServices(services);
+
+        const filterParam = searchParams.get('filter');
+        if (filterParam && ['association', 'petshop', 'veterinarian'].includes(filterParam)) {
+        
+        const newFilters = {
+          veterinarian: false,
+          association: false,
+          petshop: false
+        };
+        // Activer seulement le filtre spécifié
+        newFilters[filterParam] = true;
+        setFilters(newFilters);
+      }
+
+
+
+      } catch (err) {
+        setError(`Erreur lors du chargement des services: ${err.message}`);
+        console.error('Erreur:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAllServices();
+  }, [fetchAllServices, searchParams]); // Ajouter searchParams aux dépendances
+  
+  // Appliquer les filtres chaque fois que les filtres ou le terme de recherche changent
   useEffect(() => {
     applyFilters();
-  }, [filters, searchTerm]);
+  }, [filters, searchTerm, allServices]);
   
-  // Apply filters and search term
+  // Fonction pour appliquer les filtres et la recherche
   const applyFilters = () => {
-    let results = servicesData.services.filter(service => {
-      // Type filter
-      const typeMatch = filters[service.type];
-      
-      // Search by wilaya
-      const searchMatch = searchTerm === '' || 
-        service.wilaya.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      return typeMatch && searchMatch;
+    let results = [];
+    
+    // Rassembler tous les services actifs selon les filtres
+    Object.keys(filters).forEach(type => {
+      if (filters[type] && allServices[type]) {
+        results = [...results, ...allServices[type]];
+      }
     });
+    
+    // Appliquer la recherche par adresse si un terme est fourni
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      results = results.filter(service => 
+        service.address && service.address.toLowerCase().includes(searchLower)
+      );
+    }
     
     setFilteredServices(results);
   };
@@ -161,6 +255,66 @@ export default function ServiceLocator() {
     return filters[type] ? `${baseClass} ${styles.active}` : baseClass;
   };
 
+  // Fonction pour extraire la wilaya de l'adresse
+  const extractWilayaFromAddress = (address) => {
+    if (!address) return 'Non spécifié';
+    
+    // Chercher si une des wilayas est mentionnée dans l'adresse
+    const foundWilaya = ALGERIA_WILAYAS.find(wilaya => 
+      address.toLowerCase().includes(wilaya.toLowerCase())
+    );
+    
+    return foundWilaya || 'Autre';
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <h1 className={styles.title}>Find Pet Services in Algeria</h1>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '200px',
+          fontSize: '18px'
+        }}>
+          Chargement des services...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <h1 className={styles.title}>Find Pet Services in Algeria</h1>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '200px',
+          color: '#ef4444'
+        }}>
+          <div style={{ marginBottom: '10px' }}>{error}</div>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Find Pet Services in Algeria</h1>
@@ -174,14 +328,14 @@ export default function ServiceLocator() {
             <div className={styles.searchBar}>
               <input
                 type="text"
-                placeholder="Search by wilaya (province)..."
+                placeholder="Search by address..."
                 className={styles.searchInput}
                 value={searchTerm}
                 onChange={handleSearchChange}
                 list="wilayasList"
               />
               <datalist id="wilayasList">
-                {servicesData.wilayas.map((wilaya, index) => (
+                {ALGERIA_WILAYAS.map((wilaya, index) => (
                   <option key={index} value={wilaya} />
                 ))}
               </datalist>
@@ -196,19 +350,19 @@ export default function ServiceLocator() {
               className={getFilterClass('veterinarian')}
               onClick={() => toggleFilter('veterinarian')}
             >
-              <VetIcon /> Veterinarians
+              <VetIcon /> Veterinarians ({allServices.veterinarian.length})
             </button>
             <button 
               className={getFilterClass('association')}
               onClick={() => toggleFilter('association')}
             >
-              <AssociationIcon /> Associations
+              <AssociationIcon /> Associations ({allServices.association.length})
             </button>
             <button 
               className={getFilterClass('petshop')}
               onClick={() => toggleFilter('petshop')}
             >
-              <PetShopIcon /> Pet Shops
+              <PetShopIcon /> Pet Shops ({allServices.petshop.length})
             </button>
           </div>
           
@@ -222,11 +376,22 @@ export default function ServiceLocator() {
                   <div className={styles.resultContent}>
                     <h3 className={styles.resultName}>{service.name}</h3>
                     <p className={styles.resultAddress}>
-                      <LocationIcon /> {service.address}
+                      <LocationIcon /> {service.address || 'Adresse non spécifiée'}
                     </p>
                     <p className={styles.resultWilaya}>
-                      <MapIcon /> {service.wilaya}
+                      <MapIcon /> {extractWilayaFromAddress(service.address)}
                     </p>
+                    {service.phone && (
+                      <p className={styles.resultPhone}>
+                        📞 {service.phone}
+                      </p>
+                    )}
+                    {service.description && (
+                      <p className={styles.resultDescription}>
+                        {service.description.substring(0, 100)}
+                        {service.description.length > 100 ? '...' : ''}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))
@@ -242,7 +407,6 @@ export default function ServiceLocator() {
         
         <div className={styles.mapContainer}>
           <div className={styles.map}>
-            { }
             <div style={{
               position: 'absolute',
               top: '50%',
@@ -253,7 +417,12 @@ export default function ServiceLocator() {
               width: '80%'
             }}>
               <h3>Map of Algeria</h3>
-              
+              <p>Total Services: {filteredServices.length}</p>
+              <div style={{ marginTop: '20px', fontSize: '14px' }}>
+                <div>🏥 Veterinarians: {allServices.veterinarian.length}</div>
+                <div>🤝 Associations: {allServices.association.length}</div>
+                <div>🏪 Pet Shops: {allServices.petshop.length}</div>
+              </div>
             </div>
           </div>
         </div>

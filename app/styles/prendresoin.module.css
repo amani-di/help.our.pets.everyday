@@ -276,9 +276,7 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  :root {
-    --navbar-height: 60px; /* Hauteur de navbar potentiellement plus petite sur mobile */
-  }
+   
 
   .pageTitle {
     font-size: 2rem;

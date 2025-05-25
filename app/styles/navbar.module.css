@@ -653,6 +653,147 @@
   background-color: #1976d2;
 }
 
+
+/* AJOUTER CE CSS À LA FIN DU FICHIER navbar.module.css */
+
+/* Container pour l'icône de localisation */
+.locationContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+/* Bouton de l'icône de localisation */
+.locationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.locationButton:hover {
+  background: linear-gradient(90deg, #218838, #1fa085);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.locationIcon {
+  font-size: 1.2rem;
+}
+
+/* Dropdown de localisation */
+.locationDropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  min-width: 200px;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.3s ease-out;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Items du dropdown */
+.locationDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.locationDropdownItem:hover {
+  background: #f8f9fa;
+  color: #28a745;
+}
+
+.locationDropdownItem:not(:last-child) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdownIcon {
+  font-size: 1rem;
+  color: #28a745;
+  min-width: 16px;
+}
+
+/* Ajustements responsifs */
+@media (max-width: 768px) {
+  .locationContainer {
+    margin-right: 0.5rem;
+  }
+  
+  .locationButton {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .locationIcon {
+    font-size: 1.1rem;
+  }
+  
+  .locationDropdown {
+    min-width: 180px;
+    right: -20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .locationButton {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .locationIcon {
+    font-size: 1rem;
+  }
+  
+  .locationDropdown {
+    min-width: 160px;
+    right: -30px;
+  }
+  
+  .locationDropdownItem {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+
+
+
+
 /* Adaptation pour les écrans plus grands */
 @media (min-width: 992px) {
   .sidebar {
