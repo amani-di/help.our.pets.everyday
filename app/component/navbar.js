@@ -206,9 +206,9 @@ const handleServiceNavigation = (serviceType) => {
               <FaExclamationTriangle className={styles.linkIcon} />
               <span>Report</span>
             </Link>
-            <Link href="/cataloguedon" className={styles.link}>
+            <Link href="/Donations" className={styles.link}>
               <FaHandHoldingHeart className={styles.linkIcon} />
-              <span>Donate</span>
+              <span>Donation</span>
             </Link>
             <Link href="/annonceanimal" className={styles.link}>
               <FaBullhorn className={styles.linkIcon} />
@@ -317,13 +317,13 @@ const handleServiceNavigation = (serviceType) => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
+                    <Link href="/report" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
                       <FaExclamationTriangle className={styles.sidebarLinkIcon} />
                       <span>Report</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
+                    <Link href="/Donform" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
                       <FaHandHoldingHeart className={styles.sidebarLinkIcon} />
                       <span>Donate</span>
                     </Link>

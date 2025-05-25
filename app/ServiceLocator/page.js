@@ -1,8 +1,8 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/serviceLocator.module.css';
+import { useSearchParams } from 'next/navigation';
 
 // SVG Icons for the component
 const SearchIcon = () => (
