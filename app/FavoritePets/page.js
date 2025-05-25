@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '../styles/favoritepets.module.css';
+import Image from 'next/image'
 
 const FavoritePets = () => {
   // State for storing favorite animals
@@ -125,7 +126,7 @@ const FavoritePets = () => {
           {favorites.map(animal => (
             <div key={animal.id} className={styles.favoriteCard}>
               <div className={styles.cardImageContainer}>
-                <img 
+                <Image 
                   src={animal.image} 
                   alt={animal.name} 
                   className={styles.cardImage}
