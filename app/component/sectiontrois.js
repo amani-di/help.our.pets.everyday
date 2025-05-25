@@ -16,8 +16,8 @@ const AdoptionSection = () => {
           <div className={styles.definitionBox}>
             <Heart className={styles.heartIcon} />
             <p className={styles.definition}>
-            Adoption is an act of love that transforms two lives: yours and the animal's. 
-            It's a commitment to provide a loving, stable home for a pet in need.
+            Adoption is an act of love that transforms two lives: yours and the animal&aposs. 
+            It&aposs a commitment to provide a loving, stable home for a pet in need.
             </p>
           </div>
           
