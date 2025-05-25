@@ -391,7 +391,7 @@ const Signup = () => {
     return (
       <div className={styles.authContainer}>
         <div className={redirectStyles.redirectMessage}>
-          Vous êtes déjà connecté. Redirection vers la page d'accueil...
+          Vous êtes déjà connecté. Redirection vers la page daccueil...
         </div>
       </div>
     );

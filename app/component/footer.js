@@ -15,10 +15,10 @@ const Footer = () => {
         <div className={styles.footersection}>
           <h3>Quick Links</h3>
           <ul>
-            <li><a href="/catalogueanimal">Adoption Process</a></li>
-            <li><a href="#">Success Stories</a></li>
-            <li><a href="#">Animal Care Tips</a></li>
-            <li><a href="#">Donation</a></li>
+            <li><Link href="/catalogueanimal">Adoption Process</Link></li>
+            <li><Link href="#">Success Stories</ Link></li>
+            <li><Link href="#">Animal Care Tips</Link></li>
+            <li><Link href="#">Donation</Link></li>
           </ul>
         </div>
         
@@ -33,9 +33,9 @@ const Footer = () => {
           <h3>Join Us</h3>
           <Link  href="/signuplogin" className={styles.signupbtn}>Sign Up</Link>
           <div className={styles.socialicons}>
-            <a href="#" className={styles.socialicon}>FB</a>
-            <a href="#" className={styles.socialicon}>IG</a>
-            <a href="#" className={styles.socialicon}>TW</a>
+            <Link href="#" className={styles.socialicon}>FB</Link>
+            <Link href="#" className={styles.socialicon}>IG</Link>
+            <Link href="#" className={styles.socialicon}>TW</Link>
           </div>
         </div>
       </div>
@@ -43,9 +43,9 @@ const Footer = () => {
       <div className={styles.footerbottom}>
         <p>&copy; 2025 Pet Adoption Platform. All rights reserved.</p>
         <div className={styles.footerlinks}>
-          <a href="#">FAQ</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
+          <Link href="#">FAQ</Link>
+          <Link href="#">Privacy Policy</Link>
+          <Link href="#">Terms of Service</Link>
         </div>
       </div>
     </footer>

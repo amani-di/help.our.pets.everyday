@@ -73,7 +73,7 @@ export default function DonationsPage() {
       <h1 className={styles.donationTitle}>Animal Shelter Donations</h1>
       
       <div className={styles.quoteContainer}>
-        <p className={styles.quote}>"The greatness of a nation can be judged by the way its animals are treated."</p>
+        <p className={styles.quote}>&quot;The greatness of a nation can be judged by the way its animals are treated.&quot;</p>
         <p>- Mahatma Gandhi</p>
       </div>
 

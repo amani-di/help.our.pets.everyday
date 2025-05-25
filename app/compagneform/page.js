@@ -255,7 +255,7 @@ export default function PostCampaignForm() {
             <>
               <div className={styles.formHeader}>
                 <h1>Annonce de Campagne</h1>
-                <p>Ils n'ont pas choisi cette vie. Mais vous pouvez choisir d'aider</p>
+                <p>Ils n&apos;ont pas choisi cette vie. Mais vous pouvez choisir d&apos;aider</p>
                 <p>Connecté en tant que: <strong>{session.user.name}</strong></p>
               </div>
               
@@ -414,7 +414,7 @@ export default function PostCampaignForm() {
                   <h2 className={styles.sectionTitle}>Informations de contact :</h2>
                   
                   <div className={styles.inputGroup}>
-                    <label htmlFor="email">Email de l'association* :</label>
+                    <label htmlFor="email">Email de l&apos;association* :</label>
                     <input
                       type="email"
                       id="email"

@@ -344,7 +344,7 @@ export default function CampaignDetail() {
             </button>
             <a href={`mailto:${campaign.email}`}>
               <button className={styles.contactButton}>
-                Contacter l'association
+                Contacter l&apos;association
               </button>
             </a>
           </div>
@@ -371,7 +371,7 @@ export default function CampaignDetail() {
             {submitSuccess ? (
               <div className={styles.successMessage}>
                 <p>Votre demande de participation a été envoyée avec succès à {campaign.association}!</p>
-                <p>Un email de confirmation a été envoyé à l'association.</p>
+                <p>Un email de confirmation a été envoyé à l&apos;association.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>

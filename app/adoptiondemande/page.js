@@ -247,7 +247,7 @@ const AdoptionRequests = () => {
               )}
               
               <Link href={`/catalogueanimal/${request.animalId}`} className={styles.viewAnimalLink}>
-               View the animal's ad
+               View the animal&apos;s ad
               </Link>
             </div>
           ))}
