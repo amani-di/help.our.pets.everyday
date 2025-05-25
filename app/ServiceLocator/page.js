@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import styles from '../styles/serviceLocator.module.css';
@@ -62,7 +63,8 @@ const ALGERIA_WILAYAS = [
   "Ghardaïa", "Relizane"
 ];
 
-export default function ServiceLocator() {
+// Composant principal qui utilise useSearchParams (doit être dans Suspense)
+function ServiceLocatorContent() {
   const [filters, setFilters] = useState({
     veterinarian: true,
     association: true,
@@ -135,9 +137,8 @@ export default function ServiceLocator() {
   // Charger tous les services au montage du composant
   useEffect(() => {
     const loadAllServices = async () => {
-    setLoading(true);
-    setError(null);
-    
+      setLoading(true);
+      setError(null);
       
       try {
         const services = await fetchAllServices();
@@ -146,16 +147,15 @@ export default function ServiceLocator() {
 
         const filterParam = searchParams.get('filter');
         if (filterParam && ['association', 'petshop', 'veterinarian'].includes(filterParam)) {
-        
-        const newFilters = {
-          veterinarian: false,
-          association: false,
-          petshop: false
-        };
-        // Activer seulement le filtre spécifié
-        newFilters[filterParam] = true;
-        setFilters(newFilters);
-      }
+          const newFilters = {
+            veterinarian: false,
+            association: false,
+            petshop: false
+          };
+          // Activer seulement le filtre spécifié
+          newFilters[filterParam] = true;
+          setFilters(newFilters);
+        }
 
       } catch (err) {
         setError(`Erreur lors du chargement des services: ${err.message}`);
@@ -166,12 +166,12 @@ export default function ServiceLocator() {
     };
 
     loadAllServices();
-  }, [fetchAllServices, searchParams]); // Ajouter searchParams aux dépendances
+  }, [fetchAllServices, searchParams]);
   
   // Appliquer les filtres chaque fois que les filtres ou le terme de recherche changent
   useEffect(() => {
     applyFilters();
-  }, [applyFilters]); // Utiliser applyFilters comme dépendance
+  }, [applyFilters]);
   
   // Toggle filter state
   const toggleFilter = (filterType) => {
@@ -426,5 +426,51 @@ export default function ServiceLocator() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Composant de chargement pour Suspense
+function ServiceLocatorLoading() {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '60vh',
+      textAlign: 'center'
+    }}>
+      <div style={{
+        width: '50px',
+        height: '50px',
+        border: '3px solid #f3f3f3',
+        borderTop: '3px solid #3498db',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+        marginBottom: '20px'
+      }}></div>
+      <h2 style={{ color: '#64748b', marginBottom: '10px' }}>
+        Chargement du localisateur de services...
+      </h2>
+      <p style={{ color: '#94a3b8' }}>
+        Récupération des services vétérinaires, associations et animaleries
+      </p>
+      
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// Page principale avec Suspense
+export default function ServiceLocator() {
+  return (
+    <Suspense fallback={<ServiceLocatorLoading />}>
+      <ServiceLocatorContent />
+    </Suspense>
   );
 }
