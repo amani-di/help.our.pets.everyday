@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import styles from '../styles/serviceLocator.module.css';
 import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import styles from '../styles/serviceLocator.module.css';
 
 // SVG Icons for the component
 const SearchIcon = () => (
@@ -110,6 +110,28 @@ export default function ServiceLocator() {
     }
   }, []);
 
+  // Fonction pour appliquer les filtres et la recherche
+  const applyFilters = useCallback(() => {
+    let results = [];
+    
+    // Rassembler tous les services actifs selon les filtres
+    Object.keys(filters).forEach(type => {
+      if (filters[type] && allServices[type]) {
+        results = [...results, ...allServices[type]];
+      }
+    });
+    
+    // Appliquer la recherche par adresse si un terme est fourni
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      results = results.filter(service => 
+        service.address && service.address.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    setFilteredServices(results);
+  }, [filters, searchTerm, allServices]);
+
   // Charger tous les services au montage du composant
   useEffect(() => {
     const loadAllServices = async () => {
@@ -135,8 +157,6 @@ export default function ServiceLocator() {
         setFilters(newFilters);
       }
 
-
-
       } catch (err) {
         setError(`Erreur lors du chargement des services: ${err.message}`);
         console.error('Erreur:', err);
@@ -151,29 +171,7 @@ export default function ServiceLocator() {
   // Appliquer les filtres chaque fois que les filtres ou le terme de recherche changent
   useEffect(() => {
     applyFilters();
-  }, [filters, searchTerm, allServices]);
-  
-  // Fonction pour appliquer les filtres et la recherche
-  const applyFilters = () => {
-    let results = [];
-    
-    // Rassembler tous les services actifs selon les filtres
-    Object.keys(filters).forEach(type => {
-      if (filters[type] && allServices[type]) {
-        results = [...results, ...allServices[type]];
-      }
-    });
-    
-    // Appliquer la recherche par adresse si un terme est fourni
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase().trim();
-      results = results.filter(service => 
-        service.address && service.address.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    setFilteredServices(results);
-  };
+  }, [applyFilters]); // Utiliser applyFilters comme dépendance
   
   // Toggle filter state
   const toggleFilter = (filterType) => {
