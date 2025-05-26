@@ -161,7 +161,7 @@ const handleServiceNavigation = (serviceType) => {
           ...commonLinks,
           { label: 'Publish products', href: '/annoncerproduit', icon: <FaStore /> },
           { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
-          { label: 'My animals', href: '/mesanimaux', icon: <FaPawFaHeart /> },
+          { label: 'My animals', href: '/mesanimaux', icon: <FaPaw /> },
           { label: 'My favorites', href: '/favoritepets', icon: <FaHeart /> },
           { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaPaw /> }
         ];
