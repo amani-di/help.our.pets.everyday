@@ -1,91 +1,230 @@
 // app/api/favorites/route.js
+import { MongoClient, ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
-import { connectDB } from '../animals/route';
-import { ObjectId } from 'mongodb';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]/route';
 
-// GET endpoint to retrieve favorite animals from MongoDB based on IDs
-export async function GET(request) {
+const uri = process.env.MONGODB_URI;
+let client;
+let db;
+
+async function connectDB() {
   try {
-    // Get the IDs of favorite animals from the URL
-    const url = new URL(request.url);
-    const ids = url.searchParams.get('ids');
-    
-    if (!ids) {
-      return NextResponse.json({
-        success: false,
-        message: 'No favorite IDs provided'
-      }, { status: 400 });
+    if (!uri) {
+      throw new Error('MONGODB_URI n\'est pas défini dans les variables d\'environnement');
     }
     
-    // Parse the IDs from the comma-separated string
-    const favoriteIds = ids.split(',').filter(id => ObjectId.isValid(id));
+    if (db) return db;
     
-    if (favoriteIds.length === 0) {
+    client = new MongoClient(uri);
+    await client.connect();
+    console.log('Connecté à MongoDB avec succès');
+    
+    db = client.db('Hope');
+    return db;
+  } catch (error) {
+    console.error('Erreur de connexion à MongoDB:', error);
+    throw new Error(`Impossible de se connecter à la base de données: ${error.message}`);
+  }
+}
+
+// Fonction pour vérifier l'authentification
+async function isAuthenticated() {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return { authenticated: false };
+  }
+  return { 
+    authenticated: true,
+    user: session.user
+  };
+}
+
+// GET - Récupérer les favoris de l'utilisateur connecté
+export async function GET(request) {
+  try {
+    // Vérifier l'authentification
+    const auth = await isAuthenticated();
+    if (!auth.authenticated) {
+      return NextResponse.json({
+        success: false,
+        message: 'Authentification requise'
+      }, { status: 401 });
+    }
+
+    const { user } = auth;
+    const db = await connectDB();
+    
+    // Vérifier si des IDs spécifiques sont demandés (pour la page favorites)
+    const { searchParams } = new URL(request.url);
+    const requestedIds = searchParams.get('ids');
+    
+    if (requestedIds) {
+      // Récupérer les animaux spécifiques pour la page des favoris
+      const animalIds = requestedIds.split(',');
+      const validIds = animalIds.filter(id => ObjectId.isValid(id));
+      
+      if (validIds.length === 0) {
+        return NextResponse.json({ success: true, data: [] });
+      }
+
+      const animalsCollection = db.collection('animals');
+      const pipeline = [
+        { 
+          $match: { 
+            _id: { $in: validIds.map(id => new ObjectId(id)) }
+          }
+        },
+        {
+          $lookup: {
+            from: 'species',
+            localField: 'speciesId',
+            foreignField: '_id',
+            as: 'speciesDetails'
+          }
+        },
+        {
+          $unwind: {
+            path: '$speciesDetails',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: 'races',
+            localField: 'raceId',
+            foreignField: '_id',
+            as: 'raceDetails'
+          }
+        },
+        {
+          $unwind: {
+            path: '$raceDetails',
+            preserveNullAndEmptyArrays: true
+          }
+        }
+      ];
+      
+      const animals = await animalsCollection.aggregate(pipeline).toArray();
+      
       return NextResponse.json({
         success: true,
-        data: [] // Return empty array if no valid IDs
+        data: animals
+      });
+    } else {
+      // Récupérer tous les favoris de l'utilisateur (liste des IDs)
+      const favoritesCollection = db.collection('favorites');
+      const userFavorites = await favoritesCollection.findOne({
+        userId: user.id,
+        userType: user.userType
+      });
+      
+      return NextResponse.json({
+        success: true,
+        data: userFavorites ? userFavorites.animalIds : []
       });
     }
     
-    // Connect to MongoDB
-    const db = await connectDB();
-    const animalsCollection = db.collection('animals');
-    
-    // Retrieve animals with the provided IDs
-    const favorites = await animalsCollection.find({
-      _id: { $in: favoriteIds.map(id => new ObjectId(id)) }
-    }).toArray();
-    
-    return NextResponse.json({
-      success: true,
-      data: favorites
-    });
   } catch (error) {
-    console.error('Error retrieving favorite animals:', error);
+    console.error('Erreur lors de la récupération des favoris:', error);
     return NextResponse.json({
       success: false,
-      message: `Error retrieving favorite animals: ${error.message}`
+      message: `Erreur lors de la récupération: ${error.message}`
     }, { status: 500 });
   }
 }
 
-// POST endpoint to toggle favorite status (optional enhancement)
+// POST - Ajouter/Retirer un animal des favoris
 export async function POST(request) {
   try {
-    // Get request body
-    const body = await request.json();
-    const { animalId, isFavorite } = body;
-    
-    if (!animalId || typeof isFavorite !== 'boolean') {
+    // Vérifier l'authentification
+    const auth = await isAuthenticated();
+    if (!auth.authenticated) {
       return NextResponse.json({
         success: false,
-        message: 'Missing required fields: animalId and isFavorite'
-      }, { status: 400 });
+        message: 'Authentification requise'
+      }, { status: 401 });
     }
+
+    const { user } = auth;
+    const { animalId, action } = await request.json(); // action: 'add' ou 'remove'
     
     if (!ObjectId.isValid(animalId)) {
       return NextResponse.json({
         success: false,
-        message: 'Invalid animal ID'
+        message: 'ID d\'animal invalide'
       }, { status: 400 });
     }
+
+    const db = await connectDB();
+    const favoritesCollection = db.collection('favorites');
     
-    // For this implementation, we're just returning success
-    // In a real app with user authentication, you would store this in the database
-    // associated with the user's account
-    
-    return NextResponse.json({
-      success: true,
-      data: {
-        animalId,
-        isFavorite
-      }
+    // Rechercher le document des favoris de l'utilisateur
+    const userFavorites = await favoritesCollection.findOne({
+      userId: user.id,
+      userType: user.userType
     });
+    
+    if (!userFavorites) {
+      // Créer un nouveau document de favoris pour l'utilisateur
+      if (action === 'add') {
+        await favoritesCollection.insertOne({
+          userId: user.id,
+          userType: user.userType,
+          animalIds: [animalId],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        return NextResponse.json({
+          success: true,
+          message: 'Animal ajouté aux favoris',
+          isFavorite: true
+        });
+      } else {
+        return NextResponse.json({
+          success: true,
+          message: 'Animal pas dans les favoris',
+          isFavorite: false
+        });
+      }
+    } else {
+      // Mettre à jour le document existant
+      const currentIds = userFavorites.animalIds || [];
+      let updatedIds;
+      
+      if (action === 'add') {
+        if (!currentIds.includes(animalId)) {
+          updatedIds = [...currentIds, animalId];
+        } else {
+          updatedIds = currentIds;
+        }
+      } else if (action === 'remove') {
+        updatedIds = currentIds.filter(id => id !== animalId);
+      }
+      
+      await favoritesCollection.updateOne(
+        { userId: user.id, userType: user.userType },
+        { 
+          $set: { 
+            animalIds: updatedIds,
+            updatedAt: new Date()
+          }
+        }
+      );
+      
+      return NextResponse.json({
+        success: true,
+        message: action === 'add' ? 'Animal ajouté aux favoris' : 'Animal retiré des favoris',
+        isFavorite: action === 'add'
+      });
+    }
+    
   } catch (error) {
-    console.error('Error updating favorite status:', error);
+    console.error('Erreur lors de la modification des favoris:', error);
     return NextResponse.json({
       success: false,
-      message: `Error updating favorite status: ${error.message}`
+      message: `Erreur lors de la modification: ${error.message}`
     }, { status: 500 });
   }
 }

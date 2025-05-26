@@ -2,123 +2,181 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import styles from '../styles/favoritepets.module.css';
-import Image from 'next/image'
+import Image from 'next/image';
 
 const FavoritePets = () => {
-  // State for storing favorite animals
+  // État pour stocker les animaux favoris
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Session NextAuth
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    // Load favorites from localStorage and fetch their data
+    // Charger les favoris depuis l'API (authentifié)
     const loadFavorites = async () => {
       try {
-        // Get favorite IDs from localStorage
-        const storedFavorites = localStorage.getItem('animalFavorites');
-        if (!storedFavorites) {
+        // Vérifier si l'utilisateur est connecté
+        if (status === 'loading') {
+          return; // Attendre que la session se charge
+        }
+        
+        if (status === 'unauthenticated' || !session) {
           setFavorites([]);
           setLoading(false);
           return;
         }
 
-        // Parse the favorites from localStorage
-        const favoritesObj = JSON.parse(storedFavorites);
+        // Récupérer d'abord la liste des IDs favoris de l'utilisateur
+        const favoritesResponse = await fetch('/api/favorites');
         
-        // Convert favorites object to array of IDs where value is true
-        const favoriteIds = Object.entries(favoritesObj)
-          .filter(([_, isFavorite]) => isFavorite)
-          .map(([id]) => id);
+        if (!favoritesResponse.ok) {
+          throw new Error(`HTTP error: ${favoritesResponse.status}`);
+        }
         
-        if (favoriteIds.length === 0) {
+        const { success: favsSuccess, data: favoriteIds } = await favoritesResponse.json();
+        
+        if (!favsSuccess || !favoriteIds || favoriteIds.length === 0) {
           setFavorites([]);
           setLoading(false);
           return;
         }
         
-        // Fetch the favorite animals' data from API
-        const response = await fetch(`/api/favorites?ids=${favoriteIds.join(',')}`);
+        // Récupérer les détails des animaux favoris
+        const animalsResponse = await fetch(`/api/favorites?ids=${favoriteIds.join(',')}`);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
+        if (!animalsResponse.ok) {
+          throw new Error(`HTTP error: ${animalsResponse.status}`);
         }
         
-        const { success, data } = await response.json();
+        const { success: animSuccess, data: animalsData } = await animalsResponse.json();
         
-        if (success) {
-          // Transform the data to match the expected format in our UI
-          const formattedData = data.map(animal => ({
-            id: animal._id,
-            name: animal.animalName || animal.name,
-            species: animal.animalType || animal.species,
-            gender: animal.gender,
-            age: animal.age,
-            size: animal.size,
-            description: animal.description,
-            image: animal.photos && animal.photos.length > 0 
-              ? (animal.photos[0].url || animal.photos[0]) 
-              : animal.image || '/placeholder-animal.jpg'
-          }));
+        if (animSuccess) {
+          // Transformer les données pour correspondre au format attendu dans l'UI
+          const formattedData = animalsData.map(animal => {
+            // Gestion de l'image
+            let imageUrl = '/placeholder-animal.jpg';
+            if (animal.photos && animal.photos.length > 0) {
+              if (typeof animal.photos[0] === 'string') {
+                imageUrl = animal.photos[0];
+              } else if (animal.photos[0].url) {
+                imageUrl = animal.photos[0].url;
+              }
+            }
+
+            // Récupération du nom de l'espèce
+            const speciesName = animal.speciesDetails?.name || 
+                              animal.speciesDetails?.code || 
+                              animal.animalType || 
+                              animal.species || 
+                              'Inconnu';
+
+            // Récupération du nom de la race
+            const raceName = animal.raceDetails?.name || 
+                           animal.raceCode || 
+                           animal.race || 
+                           '';
+
+            return {
+              id: animal._id,
+              name: animal.animalName || animal.name || 'Sans nom',
+              species: speciesName,
+              race: raceName,
+              gender: animal.gender || 'Inconnu',
+              age: animal.age || 'Inconnu',
+              size: animal.size || 'Inconnu',
+              description: animal.description || 'No description available',
+              image: imageUrl
+            };
+          });
           
           setFavorites(formattedData);
         } else {
-          throw new Error('Failed to retrieve favorite animals');
+          throw new Error('Échec de la récupération des animaux favoris');
         }
       } catch (error) {
-        console.error("Error loading favorites:", error);
-        setError("Failed to load your favorite pets. Please try again later.");
+        console.error("Erreur lors du chargement des favoris:", error);
+        setError("Impossible de charger vos animaux favoris. Veuillez réessayer plus tard.");
       } finally {
         setLoading(false);
       }
     };
 
     loadFavorites();
+  }, [session, status]);
 
-    // Set up event listener for favorites changes
-    const handleStorageChange = (e) => {
-      if (e.key === 'animalFavorites') {
-        loadFavorites();
+  // Fonction pour retirer un animal des favoris
+  const removeFromFavorites = async (animalId) => {
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          animalId: animalId,
+          action: 'remove'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
       }
-    };
 
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Clean up event listener
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // Function to remove animal from favorites
-  const removeFromFavorites = (id) => {
-    // Get current favorites from localStorage
-    const storedFavorites = localStorage.getItem('animalFavorites');
-    if (storedFavorites) {
-      const favoritesObj = JSON.parse(storedFavorites);
+      const { success, message } = await response.json();
       
-      // Set this animal to not favorite
-      favoritesObj[id] = false;
-      
-      // Update localStorage
-      localStorage.setItem('animalFavorites', JSON.stringify(favoritesObj));
-      
-      // Update state to remove this animal
-      setFavorites(prevFavorites => 
-        prevFavorites.filter(animal => animal.id !== id)
-      );
-      
-      // Dispatch an event to notify other components
-      window.dispatchEvent(new Event('storage'));
+      if (success) {
+        // Mettre à jour l'état local pour supprimer cet animal
+        setFavorites(prevFavorites => 
+          prevFavorites.filter(animal => animal.id !== animalId)
+        );
+        
+        console.log(message);
+      } else {
+        throw new Error(message || 'Erreur lors de la suppression');
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression des favoris:", error);
+      setError("Impossible de supprimer cet animal des favoris. Veuillez réessayer.");
     }
   };
 
+  // Affichage conditionnel basé sur l'état de la session
+  if (status === 'loading') {
+    return (
+      <div className={styles.favoritesContainer}>
+        <div className={styles.loading}>Loading...</div>
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <div className={styles.favoritesContainer}>
+        <div className={styles.emptyState}>
+          <div className={styles.emptyStateContent}>
+            <h2 className={styles.emptyStateTitle}>You must be logged in</h2>
+            <p className={styles.emptyStateDescription}>
+              Log in to see your favorite animals and add new ones.
+            </p>
+            <Link href="/signuplogin" className={styles.viewCatalogBtn}>
+              sign up
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.favoritesContainer}>
-      <h1 className={styles.favoritesTitle}>My Favorite Pets</h1>
+      <h1 className={styles.favoritesTitle}>My favorites animals</h1>
       
       {loading ? (
-        <div className={styles.loading}>Loading your favorites...</div>
+        <div className={styles.loading}>Loading...</div>
       ) : error ? (
         <div className={styles.error}>{error}</div>
       ) : favorites.length > 0 ? (
@@ -130,6 +188,11 @@ const FavoritePets = () => {
                   src={animal.image} 
                   alt={animal.name} 
                   className={styles.cardImage}
+                  width={300}
+                  height={200}
+                  onError={(e) => {
+                    e.target.src = '/placeholder-animal.jpg';
+                  }}
                 />
                 <button 
                   className={styles.favoriteBtn}
@@ -148,7 +211,7 @@ const FavoritePets = () => {
                   <p className={styles.gender}>
                     <strong>Gender:</strong> 
                     <span className={styles.genderIcon}>
-                      {animal.gender === 'Male' || animal.gender === 'male' ? (
+                      {(animal.gender?.toLowerCase() === 'male' || animal.gender?.toLowerCase() === 'mâle') ? (
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2">
                           <circle cx="10.5" cy="10.5" r="7.5" />
                           <line x1="18" y1="18" x2="22" y2="22" />
@@ -166,9 +229,17 @@ const FavoritePets = () => {
                     </span>
                   </p>
                 </div>
-                <p><strong>Age:</strong> {animal.age} years</p>
-                <p><strong>Size:</strong> {animal.size}</p>
-                <p className={styles.animalDescription}>{animal.description}</p>
+                <p><strong>Age:</strong> {animal.age} {animal.age === '1' ? 'year' : 'years' }</p>
+                {animal.race && <p><strong>Race:</strong> {animal.race}</p>}
+                <p className={styles.animalDescription}>
+                  {animal.description.length > 100 
+                    ? `${animal.description.substring(0, 100)}...` 
+                    : animal.description
+                  }
+                </p>
+                <Link href={`/catalogueanimal/${animal.id}`} className={styles.viewDetailsBtn}>
+                 View details
+                </Link>
               </div>
             </div>
           ))}
@@ -177,9 +248,11 @@ const FavoritePets = () => {
         <div className={styles.emptyState}>
           <div className={styles.emptyStateContent}>
             <h2 className={styles.emptyStateTitle}>Your favorites list is empty.</h2>
-            <p className={styles.emptyStateDescription}>Browse our catalog to find pets you love!</p>
-            <Link href="/AnimalCatalog" className={styles.viewCatalogBtn}>
-              View Catalog
+            <p className={styles.emptyStateDescription}>
+              Browse our catalog of animals you love !
+            </p>
+            <Link href="/catalogueanimal" className={styles.viewCatalogBtn}>
+              View catalog
             </Link>
           </div>
         </div>

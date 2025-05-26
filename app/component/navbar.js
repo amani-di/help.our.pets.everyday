@@ -128,20 +128,22 @@ const handleServiceNavigation = (serviceType) => {
       case 'owner':
         return [
           ...commonLinks,
-          { label: 'My pets', href: '/my-pets', icon: <FaPaw /> },
+          { label: 'My favorites', href: '/favoritepets', icon: <FaHeart /> },
           { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
           { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
-          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaPaw /> },
         ];
 
       case 'vet':
         return [
           ...commonLinks,
-          { label: 'Mes patients', href: '/my-patients', icon: <FaStethoscope /> },
+           
           { label: 'Publish Articles', href: '/articleform', icon: <FaNewspaper /> },
           { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
-          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
-          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> }
+          { label: 'My animals', href: '/mesanimaux', icon: <FaPaw/> },
+          {label: 'My favorites', href: '/favoritepets', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaPaw /> }
+           
         ];
       case 'association':
         return [
@@ -150,16 +152,18 @@ const handleServiceNavigation = (serviceType) => {
           { label: 'Publish Articles', href: '/articleform', icon: <FaNewspaper /> },
           { label: 'Abuse Reports', href: '/', icon: <FaShieldAlt /> },
           { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
-          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
-          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> }
+          { label: 'My animals', href: '/mesanimaux', icon: <FaPaw /> },
+          { label: 'My favorites', href: '/favoritepets', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaPaw /> }
         ];
       case 'store':
         return [
           ...commonLinks,
           { label: 'Publish products', href: '/annoncerproduit', icon: <FaStore /> },
           { label: 'My Adoption Request', href: '/mesdemandeadoption', icon: <FaHandHoldingHeart /> },
-          { label: 'My animals', href: '/mesanimaux', icon: <FaHeart /> },
-          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaHeart /> }
+          { label: 'My animals', href: '/mesanimaux', icon: <FaPawFaHeart /> },
+          { label: 'My favorites', href: '/favoritepets', icon: <FaHeart /> },
+          { label: 'Manage Adoption', href: '/adoptiondemande', icon: <FaPaw /> }
         ];
       default:
         return commonLinks;
@@ -319,13 +323,13 @@ const handleServiceNavigation = (serviceType) => {
                   <li>
                     <Link href="/report" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
                       <FaExclamationTriangle className={styles.sidebarLinkIcon} />
-                      <span>Report</span>
+                      <span>Report to protect animals</span>
                     </Link>
                   </li>
                   <li>
                     <Link href="/Donform" className={styles.sidebarLink} onClick={() => setMobileMenuOpen(false)}>
                       <FaHandHoldingHeart className={styles.sidebarLinkIcon} />
-                      <span>Donate</span>
+                      <span>Donate for animals</span>
                     </Link>
                   </li>
                   <li>

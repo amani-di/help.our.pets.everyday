@@ -1,8 +1,7 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import styles from '../../styles/animaldetail.module.css';
 
 const AnimalDetail = () => {
@@ -111,6 +110,13 @@ const AnimalDetail = () => {
   }, [id]);
 
   const toggleFavorite = () => {
+    // Vérifier si l'utilisateur est connecté
+    if (status !== 'authenticated') {
+      alert('Vous devez être connecté pour ajouter un animal à vos favoris. Veuillez vous connecter ou créer un compte.');
+      router.push(`/signuplogin?callbackUrl=/animals/${id}`);
+      return;
+    }
+
     if (!animal) return;
     
     // Récupérer les favoris actuels

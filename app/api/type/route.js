@@ -1,3 +1,4 @@
+//api/type/route.js
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../config/mongodb';
 import { ObjectId } from 'mongodb';
