@@ -444,7 +444,7 @@ export default function AdminUsersPage() {
             >
               <div className={styles.userModalHeader}>
                 <h3>
-                  {viewUserModal.user.name}'s Dashboard 
+                  {viewUserModal.user.name}&aposs Dashboard 
                   <span className={styles.userTypeLabel}>
                     ({getUserTypeLabel(viewUserModal.user.userType)})
                   </span>
@@ -482,7 +482,7 @@ export default function AdminUsersPage() {
                 <div className={styles.dashboardLinks}>
                   <h4>User Dashboard Access</h4>
                   <p className={styles.accessNote}>
-                    Click on any link below to access the user's dashboard as an admin
+                    Click on any link below to access the user&aposs dashboard as an admin
                   </p>
                   <div className={styles.linksGrid}>
                     {getUserDashboardLinks(viewUserModal.user.userType, viewUserModal.user._id).map((link, index) => (
