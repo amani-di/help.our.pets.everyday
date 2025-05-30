@@ -1,6 +1,6 @@
 // services/authservices.js
 import bcrypt from 'bcryptjs';
-import { connectDB } from '../../../teamwork/app/config/mongodb';
+import { connectDB } from '../config/mongodb';
 
 
 const SALT_ROUNDS = 12;

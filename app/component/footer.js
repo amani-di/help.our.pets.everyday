@@ -8,7 +8,7 @@ const Footer = () => {
       
       <div className={styles.footercontent}>
         <div className={styles.footersection}>
-          <h3>About Us</h3>
+          <h3><Link href="/aboutus">About Us</Link> </h3>
           <p>We help connect animals in need with loving homes and provide resources for animal shelters.</p>
         </div>
         
@@ -17,16 +17,15 @@ const Footer = () => {
           <ul>
             <li><Link href="/catalogueanimal">Adoption Process</Link></li>
             <li><Link href="#">Success Stories</ Link></li>
-            <li><Link href="#">Animal Care Tips</Link></li>
-            <li><Link href="#">Donation</Link></li>
+            <li><Link href="/prendresoin/cats">Animal Care Tips</Link></li>
+            <li><Link href="/Donations">Donation</Link></li>
           </ul>
         </div>
         
         <div className={styles.footersection}>
           <h3>Contact Us</h3>
-          <p><i className={styles.icon}>📧</i> info@petadoption.com</p>
-          <p><i className={styles.icon}>📱</i> +213 781092134</p>
-          <p><i className={styles.icon}>📍</i> Algeria</p>
+          <p><i className={styles.icon}>📧</i> hope65622@gmail.com</p>
+          <p><i className={styles.icon}>📍</i> Annaba</p>
         </div>
         
         <div className={styles.footersection}>
@@ -34,7 +33,7 @@ const Footer = () => {
           <Link  href="/signuplogin" className={styles.signupbtn}>Sign Up</Link>
           <div className={styles.socialicons}>
             <Link href="#" className={styles.socialicon}>FB</Link>
-            <Link href="#" className={styles.socialicon}>IG</Link>
+            <Link href="https://www.instagram.com/hope151611?igsh=anpybWFoODVvMWdj" className={styles.socialicon}>IG</Link>
             <Link href="#" className={styles.socialicon}>TW</Link>
           </div>
         </div>

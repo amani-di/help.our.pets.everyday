@@ -1,3 +1,4 @@
+//config/auth.js
 import jwt from 'jsonwebtoken';
 
 // Secret pour la vérification des tokens JWT (doit correspondre à celui utilisé par NextAuth)

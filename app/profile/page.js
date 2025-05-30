@@ -1,3 +1,4 @@
+//app/profile/page.js
 'use client'
 
 import ProfilePage from '../component/profile';

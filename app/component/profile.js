@@ -145,16 +145,6 @@ const Profile = () => {
         </div>
         
         {renderProfileInfo()}
-        
-        {/* Boutons d'action */}
-        <div className={styles.profileActions}>
-          <button 
-            className={styles.editButton}
-            onClick={() => router.push(`/profile/edit/${userType}/${id}`)}
-          >
-            Edit my profile
-          </button>
-        </div>
       </div>
     </div>
   );

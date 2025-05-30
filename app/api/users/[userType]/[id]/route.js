@@ -42,19 +42,7 @@ export async function GET(request, { params }) {
       );
     }
     
-    // Option: Vérifier si l'utilisateur a le droit d'accéder à ce profil
-    // Décommentez pour activer cette vérification
-    /*
-    const isAdmin = session.user.role === 'admin';
-    const isOwnProfile = session.user.id === id && session.user.userType === userType;
-    
-    if (!isAdmin && !isOwnProfile) {
-      return NextResponse.json(
-        { success: false, message: 'Accès non autorisé à ce profil' },
-        { status: 403 }
-      );
-    }
-    */
+     
     
     // Connexion à la base de données
     const db = await connectDB();

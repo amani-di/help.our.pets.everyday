@@ -53,7 +53,7 @@ const AdoptionSection = () => {
         
         <div className={styles.imageSection}>
           <div className={styles.beachDogImageContainer}>
-            <img src="./images/image4.jpg" alt="animale" className={styles.beachDogImage} />
+            <img src="./images/image15.jpg" alt="animale" className={styles.beachDogImage} />
           </div>
         </div>
       </div>

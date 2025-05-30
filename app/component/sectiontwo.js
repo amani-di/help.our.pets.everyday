@@ -10,21 +10,21 @@ const AnimalCareSection = () => {
     {
       id: 1,
       name: "Cats",
-      image: "/images/image4.jpg",
+      image: "/images/image28.jpg",
       description: " Tips for your loyal companion’s well-being: Nutrition, exercise, and specialized care.",
       slug: "cats"
     },
     {
       id: 2,
       name: "Dogs",
-      image: "/images/cat-care.jpg",
+      image: "/images/image27.jpg",
       description: " Feline-specific care essentials: Building the foundation for lifelong health and happiness.",
       slug: "dogs"
     },
     {
       id: 3,
       name: "Birds",
-      image: "/images/rabbit-care.jpg",
+      image: "/images/image21.jpg",
       description: "Complete Guide to Habitat, Nutrition, and Essential Care for Your Birds.",
       slug:"birds"
     },

@@ -8,20 +8,20 @@ const HeroCarousel = () => {
   const slides = [
     {
       id: 1,
-      imageUrl: "/images/image7.jpg",
+      imageUrl: "/images/image29.jpg",
       title:  "Open your heart, adopt a <span> furry </span> friend!",
       description: "Every adoption story begins with a second chance."
     },
     {
       id: 2,
-      imageUrl: "/images/image8.jpg",
+      imageUrl: "/images/image30.jpg",
       title: "Find your perfect companion<span> today</span>",
       description: "Pets are our passion and safety is our promise.",
       
     },
     {
       id: 3,
-      imageUrl: "/images/image9.jpg",
+      imageUrl: "/images/image26.jpg",
       title: "Forever <span> friends </span>",
       description: "Every animal deserves a loving home. Your adoption can save a life and brighten your days."
     }

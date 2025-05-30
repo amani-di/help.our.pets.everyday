@@ -1,24 +1,16 @@
 'use client'
 
-import {
-  Building,
-  ChevronLeft, ChevronRight,
-  Clock,
-  FileText,
-  HeartPulse,
-  Lock,
-  Mail,
-  MapPin,
-  Phone,
-  Store,
-  User
-} from 'lucide-react';
-import { signIn, useSession } from 'next-auth/react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { 
+  User, Mail, Lock, Phone, MapPin, 
+  Building, FileText, Store, Heart,
+  ChevronLeft, ChevronRight, HeartPulse, Clock }  from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import styles from '../styles/signuplogin.module.css';
+import redirectStyles from '../styles/signuplogin.module.css';
 import { signup } from '../services/clientauthservices';
-import { default as redirectStyles, default as styles } from '../styles/signuplogin.module.css';
+import { useRouter } from 'next/navigation';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 const Signup = () => {
   const router = useRouter();
@@ -37,19 +29,19 @@ const Signup = () => {
   // Redirection si déjà connecté
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      router.push('/');  // Redirection vers la page d'accueil
+      router.push('/');  
     }
   }, [status, session, router]);
   
-  // Validation patterns
-  const validationPatterns = {
+  // Validation patterns - useMemo pour éviter la re-création
+  const validationPatterns = useMemo(() => ({
     email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     phone: /^(0)(5|6|7)[0-9]{8}$/,  
     licenseNumber: /^ONV-[0-9]{2}-[0-9]{4}$/  
-  };
+  }), []);
 
-  // Validation function
-  const validateField = (name, value) => {
+  // Validation function - useCallback pour éviter la re-création
+  const validateField = useCallback((name, value) => {
     if (!value) return "This field is required";
     
     switch (name) {
@@ -62,18 +54,18 @@ const Signup = () => {
       default:
         return "";
     }
-  };
+  }, [validationPatterns]);
   
-  // User type options
-  const userTypes = [
+  // User type options - useMemo pour éviter la re-création
+  const userTypes = useMemo(() => [
     { id: 'owner', label: 'Pet Owner', icon: User },
     { id: 'vet', label: 'Veterinarian', icon: HeartPulse },
     { id: 'association', label: 'Association', icon: Building },
     { id: 'store', label: 'Pet Store', icon: Store }
-  ];
+  ], []);
 
-  // Form fields for each user type
-  const formFields = {
+  // Form fields for each user type - useMemo pour éviter la re-création
+  const formFields = useMemo(() => ({
     owner: [
       { name: 'firstName', label: 'First Name', type: 'text', icon: User },
       { name: 'lastName', label: 'Last Name', type: 'text', icon: User },
@@ -107,10 +99,10 @@ const Signup = () => {
       { name: 'phone', label: 'Contact', type: 'tel', icon: Phone },
       { name: 'address', label: 'Store Address', type: 'text', icon: MapPin }
     ]
-  };
+  }), []);
 
-  // Handle input changes with validation
-  const handleInputChange = (e) => {
+  // Handle input changes with validation - useCallback
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -122,10 +114,10 @@ const Signup = () => {
         [name]: validationError
       }));
     }
-  };
+  }, [validateField]);
 
-  // Handle input blur for validation
-  const handleBlur = (e) => {
+  // Handle input blur for validation - useCallback
+  const handleBlur = useCallback((e) => {
     const { name, value } = e.target;
     
     // Validate all fields on blur
@@ -134,10 +126,10 @@ const Signup = () => {
       ...prev,
       [name]: validationError
     }));
-  };
+  }, [validateField]);
 
-  // Handle login submission
-  const handleLoginSubmit = async (e) => {
+  // Handle login submission - useCallback
+  const handleLoginSubmit = useCallback(async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -177,11 +169,10 @@ const Signup = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [formData, validateField, router]);
 
-
-  // Handle signup submission
-  const handleSignupSubmit = async (e) => {
+  // Handle signup submission - useCallback
+  const handleSignupSubmit = useCallback(async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -252,21 +243,23 @@ const Signup = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [formData, userType, formFields, validateField, router]);
 
-  // Helper function to get current fields
-  const getCurrentFields = () => {
+  // Helper function to get current fields - useMemo
+  const getCurrentFields = useMemo(() => {
     if (!userType) return [];
     const fields = formFields[userType];
     const startIdx = currentStep * 2;
     return fields.slice(startIdx, startIdx + 2);
-  };
+  }, [userType, currentStep, formFields]);
 
-  // Calculate max steps
-  const maxSteps = userType ? Math.ceil(formFields[userType].length / 2) : 0;
+  // Calculate max steps - useMemo
+  const maxSteps = useMemo(() => {
+    return userType ? Math.ceil(formFields[userType].length / 2) : 0;
+  }, [userType, formFields]);
 
-  // Component for user type selection
-  const UserTypeSelection = () => (
+  // Component for user type selection - useMemo pour éviter re-render
+  const UserTypeSelection = useMemo(() => (
     <div className={styles.userTypeGrid}>
       {userTypes.map(({ id, label, icon: Icon }) => (
         <button
@@ -280,10 +273,10 @@ const Signup = () => {
         </button>
       ))}
     </div>
-  );
+  ), [userTypes]);
 
-  // Component for login form
-  const LoginForm = () => (
+  // Component for login form - useMemo pour éviter re-render
+  const LoginForm = useMemo(() => (
     <form className={styles.loginForm} onSubmit={handleLoginSubmit}>
       <div className={styles.formField}>
         <div className={styles.inputWithIcon}>
@@ -325,13 +318,13 @@ const Signup = () => {
         {loading ? 'Current Connection...' : 'Sign in'}
       </button>
     </form>
-  );
+  ), [formData, errors, error, loading, handleInputChange, handleBlur, handleLoginSubmit, styles]);
 
-  // Component for signup form
-  const SignupForm = () => (
-    <form className={styles.signupForm} onSubmit={currentStep === maxSteps - 1 ? handleSignupSubmit : null}>
+  // Component for signup form - useMemo pour éviter re-render
+  const SignupForm = useMemo(() => (
+    <form className={styles.signupForm} onSubmit={currentStep === maxSteps - 1 ? handleSignupSubmit : undefined}>
       <div>
-        {getCurrentFields().map((field) => (
+        {getCurrentFields.map((field) => (
           <div key={field.name} className={styles.formField}>
             <div className={styles.inputWithIcon}>
               <field.icon className={styles.fieldIcon} />
@@ -384,14 +377,14 @@ const Signup = () => {
         </button>
       </div>
     </form>
-  );
+  ), [getCurrentFields, formData, errors, error, loading, currentStep, maxSteps, handleInputChange, handleBlur, handleSignupSubmit, styles]);
 
   // Si déjà connecté, afficher un message de redirection
   if (status === 'authenticated') {
     return (
       <div className={styles.authContainer}>
         <div className={redirectStyles.redirectMessage}>
-          Vous êtes déjà connecté. Redirection vers la page daccueil...
+          You are logged in. Redirecting to the home page...
         </div>
       </div>
     );
@@ -429,9 +422,9 @@ const Signup = () => {
             </div>
 
             {/* Form Content */}
-            {!isLogin && !userType && <UserTypeSelection />}
-            {!isLogin && userType && <SignupForm />}
-            {isLogin && <LoginForm />}
+            {!isLogin && !userType && UserTypeSelection}
+            {!isLogin && userType && SignupForm}
+            {isLogin && LoginForm}
 
             {/* Footer */}
             <div className={styles.formFooter}>
