@@ -14,7 +14,7 @@ const HeroCarousel = () => {
     },
     {
       id: 2,
-      imageUrl: "/images/image30.jpg",
+      imageUrl: "/images/image8.jpg",
       title: "Find your perfect companion<span> today</span>",
       description: "Pets are our passion and safety is our promise.",
       

@@ -440,14 +440,14 @@ const AnimalCatalog = () => {
     <div className={styles.animalCatalog}>
       <div className={styles.heroSection}>
         <div className={styles.heroContent}>
-          <h1>Catalogue d&aposAnimaux</h1>
+          <h1>Animal Catalog</h1>
           <div className={styles.adoptionInfo}>
-            <h2>Adoption Responsable</h2>
+            <h2> Responsible Adoption</h2>
             <p>
-              Adopter un animal est un engagement à long terme qui nécessite amour, patience et responsabilité. 
-              Chaque animal mérite un foyer aimant où il sera soigné et respecté. Avant d&aposadopter, 
-              assurez-vous d&aposêtre prêt à offrir le temps, l&aposespace et les ressources nécessaires pour assurer le bien-être 
-              de votre nouveau ami. Ensemble, nous pouvons créer des adoptions heureuses qui durent toute une vie.
+              Adopting an animal is a long-term commitment that requires love, patience, and responsibility.
+              Every animal deserves a loving home where it will be cared for and respected.
+              Before adopting, make sure you are ready to provide the time, space, and resources necessary to ensure the well-being of your new friend. 
+              Together, we can create happy adoptions that last a lifetime.
             </p>
           </div>
         </div>

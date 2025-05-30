@@ -396,7 +396,7 @@ const Signup = () => {
         <div className={styles.authCard}>
           <div className={styles.authImage}>
             <Image
-              src='./images/image11.jpg'
+              src='/images/image11.jpg'
               alt="Animaux"
               fill
               className={styles.imageCover}
