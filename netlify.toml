@@ -1,9 +1,10 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"  # Changé de ".next" vers "out"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+# Suppression du plugin Next.js car on utilise l'export statique
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
 
 [build.environment]
   NODE_VERSION = "18"
