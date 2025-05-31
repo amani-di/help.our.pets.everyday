@@ -76,7 +76,7 @@ const AnimalForm = () => {
       const result = await response.json();
       
       if (result.success) {
-        // Ajout de logging pour débugger
+        
         console.log('Races chargées:', result.data);
         
         // Vérifier que chaque race a un nom d'affichage

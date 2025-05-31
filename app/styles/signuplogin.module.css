@@ -19,7 +19,7 @@
   border-radius: 0.75rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  /* Augmentation de la hauteur pour plus d'espace */
+   
   min-height: 650px;
   height: auto;
   width: 100%;
@@ -41,7 +41,7 @@
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  /* Modification pour assurer un espacement correct */
+   
   justify-content: flex-start;
   min-height: 650px;
 }
@@ -66,18 +66,7 @@
   padding-bottom: 0.5rem; 
 }
 
-/* Commented out since it uses absolute positioning which may cause issues
-.formTitle::after {
-  content: '';
-  position: absolute;
-  width: 50px;
-  height: 3px;
-  background-color: #fbbf24;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 2px;
-}*/
+ 
 
 /* Added subtitle styling */
 .formSubtitle {
@@ -224,7 +213,7 @@
   cursor: pointer;
   font-weight: 500;
   display: inline-block;
-  transition: all 0.3s ease; /* Added transition */
+  transition: all 0.3s ease;  
   border: none;
   background: transparent;
 }
@@ -247,7 +236,7 @@
   transform-origin: left;
 }
 
-/* Added submit button styling */
+ 
 .submitButton {
   padding: 0.75rem 1.5rem;
   background-color: #fbbf24;
@@ -258,7 +247,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.3s ease; /* Enhanced transition */
+  transition: all 0.3s ease;  
   margin-top: auto;
   flex-shrink: 0;
 }
@@ -268,7 +257,7 @@
   transform: translateY(-2px);
 }
 
-/* Added animation for page transitions */
+ 
 .authForm > * {
   animation: fadeIn 0.5s ease-out forwards;
 }
@@ -437,8 +426,7 @@
   }
 }
 
-/* Ajoutez ces styles à votre fichier CSS existant */
-
+ 
 .errorMessage {
   color: #e53e3e;
   background-color: #fff5f5;
@@ -478,7 +466,7 @@
   font-weight: 500;
 }
 
-/* redirectMessage.css */
+/* redirectMessage  */
 .redirectMessage {
   display: flex;
   justify-content: center;

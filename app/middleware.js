@@ -20,7 +20,7 @@ export default withAuth(
       return NextResponse.next();
     }
 
-    // Vos règles existantes
+     
     if (pathname.startsWith("/my-shelters") && userType !== "association") {
       return NextResponse.redirect(new URL("/profile", req.url));
     }

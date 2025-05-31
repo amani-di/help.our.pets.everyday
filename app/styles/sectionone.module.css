@@ -1,10 +1,10 @@
-/* styles/sectionone.module.css */
+ 
 .heroSection {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  /* Appliquer le clip-path pour créer l'effet de vagues au bas de la section */
+   
   clip-path: url(#waveShape);
 }
 
@@ -72,7 +72,7 @@
   font-weight: 700;
 }
 
-/* Style pour les mots essentiels en orange dans les titres */
+ 
 .title span {
   color: #ff8a00; 
   font-weight: 800;
@@ -107,12 +107,12 @@
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Contrôles du carrousel en orange */
+ 
 .carouselControl {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #ff8a00; /* Orange semi-transparent */
+  background-color: #ff8a00; 
   border: none;
   width: 50px;
   height: 50px;
@@ -128,7 +128,7 @@
 }
 
 .carouselControl:hover {
-  background-color: #ff8a00; /* Orange vif au survol */
+  background-color: #ff8a00; 
   transform: scale(1.1);
 }
 
@@ -140,10 +140,10 @@
   right: 20px;
 }
 
-/* Indicateurs de position */
+ 
 .indicators {
   position: absolute;
-  bottom: 60px; /* Un peu plus haut pour ne pas être coupé par les vagues */
+  bottom: 60px;  
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -166,7 +166,7 @@
 }
 
 .indicator.active {
-  background-color: #ff8a00; /* Indicateur actif en orange */
+  background-color: #ff8a00;  
   transform: scale(1.2);
 }
 
