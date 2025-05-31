@@ -396,7 +396,7 @@ const Signup = () => {
         <div className={styles.authCard}>
           <div className={styles.authImage}>
             <Image
-              src='/images/image11.jpg'
+              src='image11.jpg'
               alt="Animaux"
               fill
               className={styles.imageCover}
@@ -407,7 +407,7 @@ const Signup = () => {
             {/* Header */}
             <div className={styles.formHeader}>
               <Image
-                src="/images/logo1.png"
+                src="logo1.png"
                 alt="Logo"
                 width={100}
                 height={50}
