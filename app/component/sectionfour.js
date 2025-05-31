@@ -17,19 +17,15 @@ const HomeDonationRefuge = () => {
             </p>
             <div className={styles.buttons}>
               {/* First button with Link */}
-              <Link href="/Donations" passHref legacyBehavior>
-                <a className={styles.donateButton}>
+              <Link href="/Donations"  className={styles.donateButton}>
                   View more Donations
                   
-                </a>
               </Link>
               
               {/* Second button with Link */}
-              <Link href="/Donform" passHref legacyBehavior>
-                <a className={styles.refugeButton}>
+              <Link href="/Donform"  className={styles.refugeButton}>
                   Make a Donation
                   
-                </a>
               </Link>
             </div>
           </div>
