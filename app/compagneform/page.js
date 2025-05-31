@@ -255,7 +255,7 @@ export default function PostCampaignForm() {
             <>
               <div className={styles.formHeader}>
                 <h1>Campaign Announcement</h1>
-                <p>They didn't choose this life. But you can choose to help</p>
+                <p>They did not choose this life. But you can choose to help</p>
                 <p>Connected as: <strong>{session.user.name}</strong></p>
               </div>
               
