@@ -11,7 +11,7 @@
 .disappearContainer {
   max-width: 1200px;
   margin: 0 auto;
-  padding:80px  2rem;
+  padding: 80px 2rem;
 }
 
 .disappearTitle {
@@ -80,6 +80,94 @@
 
 .reportButton svg {
   margin-right: 0.5rem;
+}
+
+/* Filters Section - NOUVEAU */
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: end;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 3rem;
+  border-top: 4px solid #FF8C00;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.filterGroup label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filterSelect,
+.filterInput {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.filterSelect:focus,
+.filterInput:focus {
+  outline: none;
+  border-color: #FF8C00;
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.clearFiltersButton {
+  background: transparent;
+  color: #FF8C00;
+  border: 2px solid #FF8C00;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  height: fit-content;
+}
+
+.clearFiltersButton:hover {
+  background: #FF8C00;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+}
+
+/* Stats Container - NOUVEAU */
+.statsContainer {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.statsText {
+  color: #666;
+  font-size: 1.1rem;
+  font-weight: 500;
+  background: rgba(255, 237, 213, 0.5);
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  display: inline-block;
+  border: 1px solid rgba(255, 140, 0, 0.2);
 }
 
 .disappearReportsList {
@@ -153,6 +241,29 @@
   box-shadow: 0 3px 10px rgba(255, 140, 0, 0.3);
 }
 
+/* Urgent Badge - NOUVEAU */
+.urgentBadge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 5;
+  background: linear-gradient(45deg, #e91818, #ff4444);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 3px 10px rgba(233, 24, 24, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
 .cardContent {
   flex: 1;
   padding: 2rem;
@@ -160,9 +271,24 @@
   flex-direction: column;
 }
 
+/* Location Header - NOUVEAU */
+.locationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
 .speciesTag {
   display: inline-block;
-  margin-bottom: 1rem;
 }
 
 .speciesTag span {
@@ -176,14 +302,6 @@
   text-transform: uppercase;
 }
 
-.cardContent h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1.8rem;
-  color: #1a1a1a;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
 .location {
   display: flex;
   align-items: center;
@@ -194,6 +312,17 @@
 .location svg {
   margin-right: 0.5rem;
   color: #1E3A8A; /* Orange */
+}
+
+/* Description - NOUVEAU */
+.description {
+  margin-bottom: 1.5rem;
+}
+
+.description p {
+  color: #555;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 .reportStats {
@@ -222,6 +351,21 @@
   margin-top: 0.25rem;
 }
 
+/* Additional Photos - NOUVEAU */
+.additionalPhotos {
+  margin-bottom: 1rem;
+}
+
+.photoCount {
+  color: #FF8C00;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(255, 140, 0, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 140, 0, 0.2);
+}
+
 .cardFooter {
   display: flex;
   justify-content: space-between;
@@ -243,7 +387,7 @@
 }
 
 .contactButton {
-  background:  #e91818;
+  background: #e91818;
   color: white;
   border: none;
   padding: 0.85rem 2rem;
@@ -254,12 +398,15 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 0.875rem;
-  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(233, 24, 24, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .contactButton:hover {
   transform: scale(1.05);
-  box-shadow: 0 7px 20px rgba(255, 140, 0, 0.4);
+  box-shadow: 0 7px 20px rgba(233, 24, 24, 0.4);
 }
 
 /* Loading and Spinner Styles */
@@ -275,7 +422,8 @@
   justify-content: center;
 }
 
-.spinner {
+.spinner,
+.loadingSpinner {
   width: 3rem;
   height: 3rem;
   border: 0.25rem solid rgba(255, 140, 0, 0.1);
@@ -383,6 +531,13 @@
   margin-bottom: 0.75rem;
 }
 
+.noReportsContainer h3 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
 .emptyStateButton {
   margin-top: 1.5rem;
   background: linear-gradient(45deg, #FF8C00, #FFA500); /* Dégradé orange */
@@ -397,6 +552,8 @@
   font-size: 0.875rem;
   box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
   display: inline-block;
+  border: none;
+  cursor: pointer;
 }
 
 .emptyStateButton:hover {
@@ -424,6 +581,7 @@
   justify-content: center;
   gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .paginationButton {
@@ -441,10 +599,8 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
+  min-width: 50px;
 }
 
 .paginationButton:hover:not(:disabled) {
@@ -456,6 +612,13 @@
   opacity: 0.6;
   cursor: not-allowed;
   background: rgba(255, 140, 0, 0.05);
+}
+
+.paginationButton.active {
+  background: linear-gradient(45deg, #FF8C00, #FFA500);
+  color: white;
+  border-color: #FF8C00;
+  box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
 }
 
 .buttonIcon {
@@ -531,11 +694,31 @@
   background-color: white;
   border-radius: 16px; 
   width: 100%;
-  max-width: 500px;
-  padding: 2.5rem;
+  max-width: 600px;
+  padding: 45px 0;
   position: relative;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
   border-top: 6px solid #FF8C00;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Modal Header - NOUVEAU */
+.modalHeader {
+  padding: 2rem 2.5rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.modalHeader h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: #333;
+  background: linear-gradient(45deg, #FF8C00, #FFA500);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .closeButton {
@@ -548,27 +731,49 @@
   cursor: pointer;
   color: #999;
   transition: color 0.2s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .closeButton:hover {
   color: #333;
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.modal h3 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+/* Modal Content - NOUVEAU */
+.modalContent {
+  padding: 2rem 2.5rem;
+}
+
+/* Report Info - NOUVEAU */
+.reportInfo {
+  background: rgba(255, 237, 213, 0.3);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #FF8C00;
+}
+
+.reportInfo p {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.reportInfo p strong {
   color: #333;
-  background: linear-gradient(45deg, #FF8C00, #FFA500); /* Dégradé orange */
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-weight: 600;
 }
 
-.modal p {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 1.5rem;
+/* Sighting Form - NOUVEAU */
+.sightingForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .formGroup {
@@ -592,6 +797,7 @@
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
 }
 
 .formGroup input:focus,
@@ -610,6 +816,28 @@
   margin-top: 2rem;
   display: flex;
   justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Cancel Button - NOUVEAU */
+.cancelButton {
+  background: transparent;
+  color: #666;
+  border: 2px solid #ddd;
+  padding: 0.85rem 2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+}
+
+.cancelButton:hover {
+  border-color: #999;
+  color: #333;
+  transform: translateY(-2px);
 }
 
 .submitButton {
@@ -637,6 +865,7 @@
   cursor: not-allowed;
   background: linear-gradient(45deg, #ccc, #ddd);
   box-shadow: none;
+  transform: none;
 }
 
 /* Responsive design */
@@ -653,6 +882,17 @@
   
   .reportStats {
     flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .filtersContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .filterGroup {
+    width: 100%;
+    max-width: 300px;
   }
 }
 
@@ -669,6 +909,12 @@
     padding: 1.5rem;
   }
   
+  .locationHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
   .cardFooter {
     flex-direction: column;
     gap: 1rem;
@@ -677,6 +923,7 @@
   
   .contactButton {
     width: 100%;
+    justify-content: center;
   }
   
   .paginationButtons {
@@ -686,11 +933,30 @@
   }
   
   .modal {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+  
+  .modalHeader,
+  .modalContent {
     padding: 1.5rem;
+  }
+  
+  .formActions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .formActions button {
+    width: 100%;
   }
 }
 
 @media (max-width: 576px) {
+  .disappearContainer {
+    padding: 40px 1rem;
+  }
+  
   .disappearTitle {
     font-size: 1.8rem;
   }
@@ -699,12 +965,30 @@
     font-size: 0.9rem;
   }
   
+  .filtersContainer {
+    padding: 1.5rem;
+  }
+  
+  .reportStats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
   .paginationButton,
   .submitButton,
   .retryButton,
   .contactButton,
-  .reportButton {
+  .reportButton,
+  .cancelButton {
     padding: 0.75rem 1.5rem;
     font-size: 0.8rem;
+  }
+  
+  .modal {
+    border-radius: 0;
+    height: 100vh;
+    max-height: 100vh;
+    margin: 0;
+    max-width: 100%;
   }
 }

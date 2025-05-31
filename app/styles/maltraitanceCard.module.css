@@ -1,0 +1,382 @@
+/* maltraitanceCard.module.css - Composant carte de signalement */
+
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  border-left: 6px solid #DC2626;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card:nth-child(even) {
+  border-left-color: #1E40AF;
+}
+
+/* Card Header */
+.cardHeader {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05));
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+}
+
+.reportBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(45deg, #DC2626, #EF4444);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
+  margin-bottom: 1rem;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.3);
+}
+
+.abuseIcon {
+  font-size: 1rem;
+}
+
+.reportDate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.calendarIcon {
+  color: #DC2626;
+  flex-shrink: 0;
+}
+
+.dateTimeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dateText {
+  font-weight: 600;
+  color: #333;
+}
+
+.timeText {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Card Body */
+.cardBody {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Photo Section */
+.photoSection {
+  margin-bottom: 1.5rem;
+}
+
+.photoContainer {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.primaryPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .primaryPhoto {
+  transform: scale(1.03);
+}
+
+.photoCount {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.noPhotoPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  background: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.noPhotoIcon {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+/* Info Section */
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex-grow: 1;
+}
+
+.locationInfo {
+  padding: 1rem;
+  background: rgba(30, 64, 175, 0.05);
+  border-radius: 12px;
+  border-left: 4px solid #1E40AF;
+}
+
+.locationTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1E40AF;
+}
+
+.locationIcon {
+  color: #1E40AF;
+  flex-shrink: 0;
+}
+
+.neighborhoodText {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.incidentInfo {
+  padding: 1rem;
+  background: rgba(220, 38, 38, 0.05);
+  border-radius: 12px;
+  border-left: 4px solid #DC2626;
+}
+
+.incidentDate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.incidentIcon {
+  color: #DC2626;
+  flex-shrink: 0;
+}
+
+.incidentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.incidentLabel {
+  font-size: 0.85rem;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.incidentValue {
+  font-weight: 700;
+  color: #DC2626;
+  font-size: 1rem;
+}
+
+.descriptionInfo {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.descriptionTitle {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.descriptionText {
+  margin: 0;
+  line-height: 1.6;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.videoIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(45deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05));
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.videoIcon {
+  color: #DC2626;
+}
+
+.videoText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #DC2626;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Contact Section - Removed */
+.contactSection {
+  display: none;
+}
+
+.contactTitle {
+  display: none;
+}
+
+.contactInfo {
+  display: none;
+}
+
+.contactItem {
+  display: none;
+}
+
+.contactIcon {
+  display: none;
+}
+
+.contactText {
+  display: none;
+}
+
+.userIcon {
+  display: none;
+}
+
+/* Card Footer */
+.cardFooter {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.cardActions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.viewDetailsButton {
+  background: linear-gradient(45deg, #DC2626, #EF4444);
+  color: white;
+  border: none;
+  padding: 0.85rem 2.5rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewDetailsButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 7px 20px rgba(220, 38, 38, 0.4);
+  text-decoration: none;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    border-left-width: 4px;
+  }
+  
+  .cardHeader, 
+  .cardBody, 
+  .cardFooter {
+    padding: 1rem;
+  }
+  
+  .photoContainer {
+    height: 180px;
+  }
+  
+  .locationTitle {
+    font-size: 1rem;
+  }
+  
+  .incidentValue {
+    font-size: 0.95rem;
+  }
+  
+  .viewDetailsButton {
+    padding: 0.75rem 2rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reportBadge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .locationTitle {
+    font-size: 0.95rem;
+  }
+  
+  .neighborhoodText,
+  .descriptionText {
+    font-size: 0.85rem;
+  }
+  
+  .viewDetailsButton {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+  }
+}

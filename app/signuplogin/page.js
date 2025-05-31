@@ -407,7 +407,7 @@ const Signup = () => {
             {/* Header */}
             <div className={styles.formHeader}>
               <Image
-                src="/api/placeholder/100/50"
+                src="/images/logo1.png"
                 alt="Logo"
                 width={100}
                 height={50}

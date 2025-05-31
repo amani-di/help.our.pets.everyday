@@ -1,4 +1,4 @@
-// models/Refuge.js
+ // models/Refuge.js
 import { ObjectId } from 'mongodb';
 
 export class Refuge {

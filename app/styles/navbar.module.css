@@ -54,36 +54,36 @@
 }
 
 .logo {
-  height: 100%; /* Augmenté de 90% à 95% */
+  height: 95%; /* Augmenté de 90% à 95% */
   display: flex;
   align-items: center;
   transition: all 0.3s ease;
-  padding: 0.3rem;
+  padding: 0.5rem;
 }
 
 .scrolled .logo {
-  height: 95%; /* Augmenté de 85% à 90% */
+  height: 90%; /* Augmenté de 85% à 90% */
 }
 
 .logoImage {
   width: auto !important;
   height: 100% !important;
-  max-height: 110px !important; /* Augmenté de 60px à 75px */
-  min-height: 85px !important; /* Ajouté une hauteur minimale */
+  max-height: 75px !important; /* Augmenté de 60px à 75px */
+  min-height: 55px !important; /* Ajouté une hauteur minimale */
   object-fit: contain;
   filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.15)); /* Ombre plus prononcée */
   transition: all 0.3s ease;
 }
 
 .logoPlaceholder {
-  font-size: 3rem; /* Augmenté de 1.8rem à 2.2rem */
+  font-size: 2.2rem; /* Augmenté de 1.8rem à 2.2rem */
   font-weight: 800;
   color: #3a86ff;
   letter-spacing: 1px;
   background: linear-gradient(135deg, #3a86ff, #8338ec);
   /*-webkit-background-clip: text;*/
   -webkit-text-fill-color: transparent;
-  padding: 0.9rem 1.7rem; /* Augmenté le padding */
+  padding: 0.7rem 1.3rem; /* Augmenté le padding */
   border: 2px solid transparent;
   border-image: linear-gradient(135deg, #3a86ff, #8338ec);
   border-image-slice: 1;
@@ -93,8 +93,8 @@
 }
 
 .scrolled .logoImage {
-  max-height: 90px !important; /* Augmenté de 50px à 60px */
-  min-height: 70px !important; /* Ajouté une hauteur minimale */
+  max-height: 60px !important; /* Augmenté de 50px à 60px */
+  min-height: 45px !important; /* Ajouté une hauteur minimale */
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2)); /* Ombre plus prononcée */
 }
 
@@ -104,8 +104,8 @@
 }
 
 .scrolled .logoPlaceholder {
-  font-size: 2,7rem; /* Augmenté de 1.9rem à 2rem */
-  padding: 1rem 1.6rem; /* Augmenté le padding */
+  font-size: 2rem; /* Augmenté de 1.9rem à 2rem */
+  padding: 0.8rem 1.2rem; /* Augmenté le padding */
 }
 
 .logoPlaceholder:hover {
@@ -385,15 +385,52 @@
 }
 
 /* Responsive design */
+@media (min-width: 1200px) {
+  .logoImage {
+    max-height: 85px !important; /* Encore plus grand sur les grands écrans */
+  }
+  
+  .scrolled .logoImage {
+    max-height: 70px !important;
+  }
+  
+  .logoPlaceholder {
+    font-size: 2.4rem;
+  }
+}
+
+
+
+
+
 @media (max-width: 992px) {
+
+
+  .navbar {
+    height: 85px; /* Ajusté pour les écrans moyens */
+  }
+  
+  .navbar.scrolled {
+    height: 65px;
+  }
+  
   .logoSection {
-    gap: 1.5rem;
+    gap: 2rem;
   }
   
   .links {
     gap: 1rem;
   }
+  
+  .logoImage {
+    max-height: 70px !important;
+  }
+  
+  .scrolled .logoImage {
+    max-height: 55px !important;
+  }
 }
+
 
 @media (max-width: 768px) {
   .navbar {
@@ -450,11 +487,11 @@
 
 @media (max-width: 576px) {
   .navbar {
-    height: 60px;
+    height: 75px;
   }
   
   .navbar.scrolled {
-    height: 50px;
+    height:60px;
   }
   
   .links {
@@ -467,6 +504,15 @@
   
   .userModalFooter .logoutButton {
     width: 100%;
+  }
+  .logoImage {
+    max-height: 60px !important; /* Augmenté */
+    min-height: 45px !important;
+  }
+  
+  .scrolled .logoImage {
+    max-height: 50px !important; /* Augmenté */
+    min-height: 40px !important;
   }
 }
 

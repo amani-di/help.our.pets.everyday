@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -74,7 +74,7 @@ const DonationCard = ({ donation }) => {
                  
                 
                 <div className={styles.cardActions}>
-                    <Link href={`/donations/${id}`} className={styles.viewDetailsLink}>
+                    <Link href={`/Donations/${id}`} className={styles.viewDetailsLink}>
                         View Details →
                     </Link>
                     {donation.photos && donation.photos.length > 1 && (

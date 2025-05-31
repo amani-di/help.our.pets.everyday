@@ -25,9 +25,6 @@ export default function ReportForm() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [formData, setFormData] = useState({
     reportType: 'disparition',
-    species: '',
-    breed: '',
-    gender: 'male',
     disappearanceDate: '',
     abuseDate: '',
     wilaya: '',
@@ -153,8 +150,7 @@ export default function ReportForm() {
     
     // Type-specific validations
     if (formData.reportType === 'disparition') {
-      if (!formData.species) newErrors.species = 'Species is required';
-      if (!formData.breed) newErrors.breed = 'Breed is required';
+      if (!formData.description) newErrors.description = 'Animal description is required';
       if (!formData.disappearanceDate) newErrors.disappearanceDate = 'Disappearance date is required';
       if (!formData.ownerContact) newErrors.ownerContact = 'Owner contact information is required';
     } else if (formData.reportType === 'maltraitance') {
@@ -198,9 +194,6 @@ export default function ReportForm() {
       
       // Add type-specific fields
       if (formData.reportType === 'disparition') {
-        formDataToSend.append('species', formData.species);
-        formDataToSend.append('breed', formData.breed);
-        formDataToSend.append('gender', formData.gender);
         formDataToSend.append('dateIncident', formData.disappearanceDate);
         formDataToSend.append('contact', formData.ownerContact);
       } else if (formData.reportType === 'maltraitance') {
@@ -244,9 +237,6 @@ export default function ReportForm() {
       setTimeout(() => {
         setFormData({
           reportType: 'disparition',
-          species: '',
-          breed: '',
-          gender: 'male',
           disappearanceDate: '',
           abuseDate: '',
           wilaya: '',
@@ -319,7 +309,7 @@ export default function ReportForm() {
         <p className={styles.reportFormDescription}>
           {formData.reportType === 'disparition' 
             ? 'Help us find your missing pet by providing detailed information below.'
-            : 'Report animal abuse to help protect animals from cruelty and neglect.'
+            : 'Report animal abuse to help protect animals from cruelty and neglect. Your report will only be seen by associations'
           }
         </p>
         
@@ -354,66 +344,23 @@ export default function ReportForm() {
           {/* Dynamic form fields based on report type */}
           {formData.reportType === 'disparition' && (
             <>
-              {/* Animal Information Section */}
+              {/* Animal Description Section */}
               <div className={styles.formSection}>
-                <h3>Animal Information</h3>
-                
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="species">Species *</label>
-                    <input 
-                      type="text" 
-                      id="species" 
-                      name="species" 
-                      value={formData.species}
-                      onChange={handleChange}
-                      placeholder="e.g., Dog, Cat, Bird"
-                      className={errors.species ? styles.inputError : ''}
-                      required
-                    />
-                    {errors.species && <div className={styles.errorMessage}>{errors.species}</div>}
-                  </div>
-                  
-                  <div className={styles.formGroup}>
-                    <label htmlFor="breed">Breed *</label>
-                    <input 
-                      type="text" 
-                      id="breed" 
-                      name="breed" 
-                      value={formData.breed}
-                      onChange={handleChange}
-                      placeholder="e.g., German Shepherd, Siamese"
-                      className={errors.breed ? styles.inputError : ''}
-                      required
-                    />
-                    {errors.breed && <div className={styles.errorMessage}>{errors.breed}</div>}
-                  </div>
-                </div>
+                <h3>Animal Description</h3>
                 
                 <div className={styles.formGroup}>
-                  <label htmlFor="gender">Gender *</label>
-                  <div className={styles.radioGroup}>
-                    <label className={styles.radioLabel}>
-                      <input 
-                        type="radio" 
-                        name="gender" 
-                        value="male" 
-                        checked={formData.gender === 'male'}
-                        onChange={handleChange}
-                      />
-                      Male
-                    </label>
-                    <label className={styles.radioLabel}>
-                      <input 
-                        type="radio" 
-                        name="gender" 
-                        value="female" 
-                        checked={formData.gender === 'female'}
-                        onChange={handleChange}
-                      />
-                      Female
-                    </label>
-                  </div>
+                  <label htmlFor="description">Animal Description *</label>
+                  <textarea 
+                    id="description" 
+                    name="description" 
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Provide detailed information about the animal (species, breed, color, size, distinctive features, etc.)"
+                    rows={5}
+                    className={errors.description ? styles.inputError : ''}
+                    required
+                  />
+                  {errors.description && <div className={styles.errorMessage}>{errors.description}</div>}
                 </div>
                 
                 <div className={styles.formGroup}>
@@ -613,25 +560,24 @@ export default function ReportForm() {
             )}
           </div>
           
-          {/* Description - Common for both */}
-          <div className={styles.formSection}>
-            <h3>Additional Information</h3>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="description">Description (Optional)</label>
-              <textarea 
-                id="description" 
-                name="description" 
-                value={formData.description}
-                onChange={handleChange}
-                placeholder={formData.reportType === 'disparition' 
-                  ? "Provide additional details about the animal (color, size, distinctive features, etc.)"
-                  : "Describe the abuse situation, any identifiable information about the perpetrators, etc."
-                }
-                rows={5}
-              />
+          {/* Description section for maltraitance only */}
+          {formData.reportType === 'maltraitance' && (
+            <div className={styles.formSection}>
+              <h3>Additional Information</h3>
+              
+              <div className={styles.formGroup}>
+                <label htmlFor="description">Description (Optional)</label>
+                <textarea 
+                  id="description" 
+                  name="description" 
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Describe the abuse situation, any identifiable information about the perpetrators, etc."
+                  rows={5}
+                />
+              </div>
             </div>
-          </div>
+          )}
           
           {/* Submit button */}
           <div className={styles.formActions}>

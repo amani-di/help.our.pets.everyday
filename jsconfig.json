@@ -3,5 +3,14 @@
     "paths": {
       "@/*": ["./*"]
     }
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/*.min.js": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
   }
 }
