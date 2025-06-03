@@ -53,9 +53,9 @@ export default function AdminLayout({ children }) {
     <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <nav style={{
         backgroundColor: '#2c3e50',
-        padding: ' 1.5rem 2rem',
+        padding: '100px 1rem 2rem',
         borderBottom: '3px solid #34495e',
-        marginTop: '0'
+         
       }}>
         <div style={{
           display: 'flex',
