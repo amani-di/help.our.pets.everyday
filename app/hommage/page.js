@@ -25,7 +25,7 @@ export default function Hommage() {
 
             My experience with Rosa has been nothing short of magical. From the moment she gracefully stepped into my home, she claimed not just a corner of my house, but the entire landscape of my heart. Her piercing blue eyes seem to hold ancient wisdom, and her soft purr is like a healing balm after long days. She has taught me the art of living in the moment, finding joy in simple pleasures, and the profound comfort that comes from unconditional companionship.
 
-            Every day with Rosa is a new chapter in our love story - whether she's curled up on my lap during quiet evenings, following me around the house like my devoted shadow, or simply existing in perfect harmony beside me.
+            Every day with Rosa is a new chapter in our love story - whether she is curled up on my lap during quiet evenings, following me around the house like my devoted shadow, or simply existing in perfect harmony beside me.
           </p>
           <ul className={styles.animalFacts}>
             <li>🐶 Born: February 2, 2024</li>
@@ -42,7 +42,7 @@ export default function Hommage() {
           <p className={styles.animalHistory}>
             Achil was more than a pet - he was family. For 13 wonderful years, 
             he was our loyal protector, our comfort during hard times, and 
-            our daily source of laughter. Though he's no longer with us physically, 
+            our daily source of laughter. Though he is no longer with us physically, 
             his paw prints remain forever on our hearts.
           </p>
           <ul className={styles.animalFacts}>
@@ -65,7 +65,7 @@ export default function Hommage() {
       </div>
       
       <div className={styles.footer}>
-        <p>"Thank you for filling our lives with love, laughter, and unforgettable moments!</p>
+        <p>Thank you for filling our lives with love, laughter, and unforgettable moments!</p>
         <div className={styles.hearts}>❤️ 🐾 Forever in Our Hearts 🐾 ❤️</div>
       </div>
     </div>
