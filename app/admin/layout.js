@@ -1,4 +1,4 @@
-//admin layout.js - Version Corrigée
+//admin layout.js 
 'use client';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -53,7 +53,7 @@ export default function AdminLayout({ children }) {
     <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <nav style={{
         backgroundColor: '#2c3e50',
-        padding: '80px 1rem 2rem',
+        padding: '80px  2rem',
         borderBottom: '3px solid #34495e'
       }}>
         <div style={{
